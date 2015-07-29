@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<import resource="classpath:/autocloud/config/dbConfig.xml"/>
+	<bean id="hzConfig" class="com.hazelcast.client.config.ClientConfig">
+		<property name="groupConfig">
+			<bean class="com.hazelcast.config.GroupConfig">
+				<property name="name" value="acLocalDev"/>
+				<property name="password" value="hazelcast"/>
+			</bean>
+		</property>
+		<property name="serializationConfig">
+			<bean class="com.hazelcast.config.SerializationConfig">
+				<property name="portableFactories">
+					<map>
+						<entry key="100">
+							<bean class="com.px100systems.data.plugin.storage.hazelcast.CustomPortableFactory"/>
+						</entry>
+					</map>
+				</property>
+			</bean>
+		</property>
+		<property name="networkConfig">
+			<bean class="com.hazelcast.client.config.ClientNetworkConfig">
+				<property name="addresses">
+					<list>
+						<value>127.0.0.1:5705</value>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="igniteConfig" class="org.apache.ignite.configuration.IgniteConfiguration">
+		<property name="gridName" value="acDataGrid"/>
+
+		<property name="userAttributes">
+			<map>
+				<entry key="type" value="dev"/>
+			</map>
+		</property>
+
+		<property name="marshaller">
+			<bean class="org.apache.ignite.marshaller.optimized.OptimizedMarshaller">
+				<property name="requireSerializable" value="false"/>
+			</bean>
+		</property>
+
+		<property name="includeEventTypes">
+			<list>
+			</list>
+		</property>
+
+		<property name="atomicConfiguration">
+			<bean class="org.apache.ignite.configuration.AtomicConfiguration">
+				<property name="backups" value="1"/>
+				<property name="cacheMode" value="PARTITIONED"/>
+			</bean>
+		</property>
+
+		<property name="gridLogger">
+			<bean class="org.apache.ignite.logger.log4j.Log4JLogger"/>
+		</property>
+
+		<property name="metricsLogFrequency" value="0"/>
+		<property name="metricsUpdateFrequency" value="15000"/>
+
+		<property name="peerClassLoadingEnabled" value="false"/>
+
+		<property name="transactionConfiguration">
+			<bean class="org.apache.ignite.configuration.TransactionConfiguration">
+				<property name="defaultTxConcurrency" value="PESSIMISTIC"/>
+				<property name="defaultTxIsolation" value="READ_COMMITTED"/>
+				<property name="defaultTxTimeout" value="30000"/>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="userFile" class="java.lang.String">
+		<constructor-arg value="/javadev/projects/properties/dbb-users.properties"/>
+	</bean>
+</beans>
+

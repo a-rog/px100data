@@ -1,0 +1,11 @@
+com.px100systems.data.core
+com.px100systems.data.plugin.persistence
+com.px100systems.data.plugin.persistence.jdbc
+com.px100systems.data.plugin.storage
+com.px100systems.data.plugin.storage.hazelcast
+com.px100systems.data.plugin.storage.ignite
+com.px100systems.data.plugin.storage.mongo
+com.px100systems.data.utility
+com.px100systems.platform.app.util
+com.px100systems.util
+com.px100systems.util.serialization

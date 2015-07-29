@@ -1,0 +1,99 @@
+body { 
+	background-color: white;
+	color: black;
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+}
+
+.centeredVertically {
+	vertical-align: middle !important;
+}
+
+.whiteText {
+	color: white !important; 
+}
+
+.whiteBackground {
+	background-color: white !important; 
+}
+
+.inputForm {
+	background-color: #F0F0F0;
+	color: black;
+}
+
+.fineprint {
+	font-size: 10px; 
+	font-family: Arial, Helvetica, sans-serif; 
+}
+
+.clickable {
+    text-decoration:underline;
+    cursor: pointer;
+    font-style: italic;
+}
+
+.commonFont {
+	font-size: 100%;
+}
+
+.errorText {
+	color: #e13f3b; 
+	font-style: italic;
+	font-size: 16px; 
+}
+
+.messageText {
+	color: blue; 
+	font-style: italic;
+	font-size: 16px; 
+}
+
+.largeText {
+	font-size: 20px; 
+}
+
+.biggerText {
+	font-size: 13px; 
+}
+
+.normalText {
+	font-size: 12px; 
+}
+
+.smallText {
+	font-size: 12px; 
+}
+
+.buttonText {
+    font-size: 125%;
+    font-weight: bold;
+    background-color: lightgray;
+}
+
+.mainPanel {
+	background-color: #F0F0F0;
+	color: black;
+}
+
+.pageHeader {
+	height: 20px;
+	padding: 5px; 
+	background-color: #004778; 
+	color: white; 
+	font-family: Arial, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.pageHeaderLinks {
+	.clickable;
+	color: white; !important; 
+	font-size: 12px;
+	font-weight: normal;
+}
+
+.currentPage {
+	font-size: 14px;
+	font-weight: bold;
+}

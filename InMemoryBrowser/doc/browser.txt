@@ -1,0 +1,61 @@
+DB Browser for In-Memory Storage
+================================
+
+Domain Class Module Dependencies:
+---------------------------------
+Since they are not inside the /war file, all external dependencies should be specified via the App server's means e.g. Tomcat's context file.
+Refer to https://tomcat.apache.org/tomcat-8.0-doc/config/resources.html
+IntelliJ: add the necessary module dependencies (press F4 to edit) and then go to the artifacts (normal and exploded) and "Fix" them there.
+
+
+Config:
+-------
+
+Browsers are per-cluster. Several can be running on the same Web server.
+
+Cluster configuration is specified in /externalConfig/dbbrowser/config/... It can have many Spring XML files and nested directories.
+
+In Dev environment you typically want to replicate the main server/cluster setup w/o repeating all persistence config (storages, lazy-loading, etc.). 
+Simply import the main app's config file: everything except for the storage provider's internals (e.g. Hazelcast cluster config).
+In Prod environment the browser's cluster config should be completely independent, however w/o storage provider's write-through (should be reserved for Dev deployment) 
+it does not need persistence server (and provider) at all. 
+
+Browser-specific config includes two Strings: 
+- userFile: the full pathname of the user properties file holding "username=encrypted-password" data.
+- clusterName: the name of the cluster the browser connects to (displayed in the page header); Typically specified in the (imported) main app's config. 
+
+The browser should connect to the cluster as [Hazelcast] client, however a full node would work w/o problems.
+
+All entity classes (and third-party jars with their base classes) should be included in either the server's or additional Web app classpath. 
+The latter can be achieved in Eclipse by manually editing the DEployment Assembly. In any case no messing with Maven is required.
+Move all entities from a bigger app (e.g. Web app) into an independent project (jar).
+Since entity classes are scanned and loaded, anything they use (import) should be in the classpath which presents a problem with code.
+To avoid referencing every API used by the main app, simply move that logic (methods) out of the entity calling another class in the package not scanned by the framework.
+
+Creating users is simply adding the to the users property file. 
+Resetting the user password, which allows him/her to register again is achieved by clearing the password in the file, so the entry would look like "username=".
+
+
+Links:
+------
+Main Page: <webapp-url>/browse
+Login for registered users with passwords (automatically redirected from the main page if session expired): <webapp-url>/login
+Registration for users w/o passwords: <webapp-url>/register/<username>
+The rest of the links are internal.
+
+
+Dev Environment Caveats:
+------------------------
+A Dev environemnt is a one-node cluster in the same JVM (Web Server e.g. Tomcat) as the browser. 
+
+Two Hazelcast nodes: a full one and the browser's client (or even a full node) work fine, however since they are in the same JVM Hazelcast does not broadcast topic messages to those "local" nodes.
+The framework has the fallback mechanism and handles it just fine. Simply beware of that Hazelcast behavior.  
+
+The cluster config in Dev environment is setup for frequent server JVM restarts (and crashes). 
+It has storage provider level write-through (HazelcastInMemoryStorage.writeThrough) instead of the periodic write-behind (DataStorage.persistence=false).
+It also has lazy-loading for faster server startups (DataStorage.lazyLoad=false).
+
+Periodically developers need to reinitialize the database (DataStorage.initializer). 
+If the browser is deployed on the same server and imported the same configuration, it will fail on startup due to inability to load the initializer class, 
+which is typically application-specific, and not separated into the entities jar. It is OK. A restart w/o initialization will work fine. 
+     
