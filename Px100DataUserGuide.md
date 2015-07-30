@@ -12,7 +12,7 @@ The example below uses Ignite:
             http://www.springframework.org/schema/util
             http://www.springframework.org/schema/util/spring-util.xsd">
         <bean id="igniteConfig" class="org.apache.ignite.configuration.IgniteConfiguration">
-            <property name="gridName" value="acDataGrid"/>
+            <property name="gridName" value="myDataGrid"/>
     
             <!-- Optional arbitrary "tags" to enumerate nodes, group them into cluster groups, etc. -->
             <property name="userAttributes">
@@ -118,6 +118,7 @@ The example below uses Ignite:
                     <value>x.y.z</value>
                 </list>
             </property>
+            <property name="backupDirectory" value="."/>
         </bean>
     </beans>
 ```
@@ -140,7 +141,7 @@ public class SomeClass {
     ...
     
     public void hello(Long id) {
-        Transaction tx = ds.getTransaction(0);
+        Transaction tx = ds.transaction(0);
         MyEntity bean = tx.get(MyEntity.class, id);
         bean.setSomeStringProperty("Hello, Px100 Data!");
         tx.update(bean, false);
@@ -152,12 +153,12 @@ public class SomeClass {
 ```
 
 **Note:** Px100 Data uses "pseudo-transactions" for performance reasons: minimal locking. It means that no locking occurs when we call
-ds.getTransaction(). If all we did, were get operations, we wouldn't even need to commit - however both read and write API is provided through
+ds.transaction(). If all we did, were get operations, we wouldn't even need to commit - however both read and write API is provided through
 Transaction only for consistency. Telling Transaction to update() simply puts the bean on the update list. Only when we call commit(), 
 the actual "real" transaction happens (simulated in Mongo anyway), as the framework goes through its lists of accumulated inserts, updates, 
 and deletes, locking the data units (Mongo collections, Hazelcast maps, or Ignite caches) and actually writing the data to them.
 
-It also means you can (but shouldn't) have some complex long-running logic between ds.getTransaction() and tx.commit(), as the only "real" 
+It also means you can (but shouldn't) have some complex long-running logic between ds.transaction() and tx.commit(), as the only "real" 
 transaction happens inside commit(). And if you never call commit() - don't put it inside the finally block - e.g. when some exception occurs,
 the pseudo-transaction is naturally rolled backed because nothing was even attempted to be written anyway: it did not reach that point.
  
@@ -174,7 +175,7 @@ Once committed, Transaction will not accept any operations, even read ones.
 Sometimes you need to break a long transaction into "batches". It can be done like this:
 
 ```java
-        Transaction tx = ds.getTransaction(0);
+        Transaction tx = ds.transaction(0);
 
         for (int i = 0, n = BATCH_SIZE; i < n; i++)
             tx.insert(beans[i]);
@@ -522,7 +523,7 @@ Px100 Data only API to read and write data is Transaction. You obtain it via Dat
     ...
     
     public void example() {
-        Transaction tx = ds.getTransaction(0);
+        Transaction tx = ds.transaction(0);
 
         // do something
         ... 
@@ -535,7 +536,7 @@ Px100 Data only API to read and write data is Transaction. You obtain it via Dat
 
 ### Inserts
 ```java
-        Transaction tx = ds.getTransaction(0);
+        Transaction tx = ds.transaction(0);
 
         MedicalInsuranceApplication entity = new MedicalInsuranceApplication();
         entity.setName("John Doe");
@@ -554,7 +555,7 @@ Px100 Data only API to read and write data is Transaction. You obtain it via Dat
 
 ### Update
 ```java
-        Transaction tx = ds.getTransaction(0);
+        Transaction tx = ds.transaction(0);
 
         MedicalInsuranceApplication entity = tx.get(MedicalInsuranceApplication.class, 125L);
         entity.setName("Ivan Petroff");
@@ -575,7 +576,7 @@ import static com.px100systems.data.core.Criteria.*;
 
 ...
 
-        Transaction tx = ds.getTransaction(0);
+        Transaction tx = ds.transaction(0);
 
         MedicalInsuranceApplication entity = tx.get(MedicalInsuranceApplication.class, 125L);
         tx.deleteWithDependents(entity);
@@ -595,7 +596,7 @@ import static com.px100systems.data.core.Criteria.*;
 
 ...
 
-        Transaction tx = ds.getTransaction(0);
+        Transaction tx = ds.transaction(0);
 
         long applicationCount = tx.delete(MedicalInsuranceApplication.class, null);
         long filteredApplicationCount = tx.delete(MedicalInsuranceApplication.class, 
@@ -791,6 +792,7 @@ The configuration below uses a JDBC persister with MySQL. It is a typical develo
         </property>
     
         <property name="persistenceServer" ref="persistenceServer"/>
+        <property name="backupDirectory" value="/some-directory"/>
     </bean>
 </beans>
 ```

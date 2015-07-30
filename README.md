@@ -95,5 +95,64 @@ No data migration when you add or remove fields and even entire entities - natur
     
 Orthogonal and minimalistic API with criteria queries.    
 
+## Installation
+Use the foolowing Maven repository *(temporary measure - until the project is added to Maven Central)*
+```xml
+    <repositories>
+        <repository>
+            <id>Px100 Data GitHub Repo</id>
+            <url>https://github.com/a-rog/px100data/raw/master/releases</url>
+        </repository>
+    </repositories>
+```
+
+### Core Maven Dependencies
+```xml
+    <dependency>
+        <groupId>com.px100systems</groupId>
+        <artifactId>px100-persistence</artifactId>
+        <version>0.3.0</version>
+    </dependency>
+```
+
+Add one of the following:
+
+**Persistent Ignite**
+```xml
+    <dependency>
+        <groupId>com.px100systems</groupId>
+        <artifactId>ignite-storage</artifactId>
+        <version>0.3.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.px100systems</groupId>
+        <artifactId>in-memory-jdbc-persistence</artifactId>
+        <version>0.3.0</version>
+    </dependency>
+```
+
+**Persistent Hazelcast**
+```xml
+    <dependency>
+        <groupId>com.px100systems</groupId>
+        <artifactId>hazelcast-storage</artifactId>
+        <version>0.3.0</version>
+    </dependency>
+    <dependency>
+        <groupId>com.px100systems</groupId>
+        <artifactId>in-memory-jdbc-persistence</artifactId>
+        <version>0.3.0</version>
+    </dependency>
+```
+
+**Mongo**
+```xml
+    <dependency>
+        <groupId>com.px100systems</groupId>
+        <artifactId>mongo-storage</artifactId>
+        <version>0.3.0</version>
+    </dependency>
+```
+
 ## Learn Px100 Data
 See the User Guide
