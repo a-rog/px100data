@@ -5,31 +5,32 @@ It provides an elegant unified API for using in-memory data-grids like Hazelcast
 choice of write-behind and write-through (also distributed/redundant). It also wraps traditional on-disk databases like Mongo. In essence
 Px100 data is a NoSQL JDBC-like layer for data-grids and databases like Mongo. 
 
-Px100 stands for Productivity x100. It achieves programmer's productivity by eliminating CRUD, N-tier architecture with its "facades" and "delegates" 
-and other IT "conventional wisdoms". Px100 views Internet-hosted SaaS systems as traditional object-oriented programs e.g. Java Swing apps
-comprised of smart fine-grained objects modeling the real world - alive and interacting with each other, as OOP originally envisioned, 
-rather than dumb DTOs being passed up and down by undeniably procedural "stateless" "services". 
+Px100 stands for Productivity x100. It achieves programmer's productivity by eliminating CRUD, N-tier architecture with its "facades" and "delegates", 
+and other IT "conventional wisdoms". Px100 views Internet-hosted SaaS systems as traditional object-oriented programs e.g. Java Swing ones
+comprised of smart fine-grained objects - alive and interacting with each other, as OOP originally envisioned, rather than dumb DTOs being passed 
+up and down by undeniably procedural "stateless" "services". 
  
-Px100 Data framework role is to provide scalable and fault-tolerant permanent transactional storage of those smart entities. Note the term "storage" - 
+Px100 Data role is to provide the scalable and fault-tolerant permanent transactional storage for those smart entities. Note the term "storage" - 
 not "database". In-memory data grid based Px100 Data is, in our opinion of course, the closest thing to the true limitless, persistent, and 
-transactional "RAM" trillions of smart connected OOP citizens (objects) can live in w/o the need to load or save themselves from/to disk via some 
-bulk data transfer. 
+transactional "RAM" trillions of smart connected OOP citizens (objects) can live in w/o the need to load or save themselves from/to disk via  
+bulk data transfers. 
 
-After all the only data-centric application problem that matters: modeling complex business workflows and processors has nothing to do with
+After all, the only data-centric application problem that matters: modeling complex business workflows and processors has nothing to do with
 data persistence logistics: passing data back and forth between the client and server, server and the database, packing and unpacking it, 
-transforming between DTO formats (strongly-typed Java vs. JSON) and other tedious CRUD plumbing. CRUD code shouldn't be auto-generated,
+transformations between DTO formats (e.g. strongly-typed Java vs. JSON) and other tedious CRUD plumbing. CRUD code shouldn't be auto-generated,
 prepackaged, or hidden. It simply has to go. Data shouldn't be dumb, and it shouldn't be transported along application "layers".
  
 It should simply live in the RAM w/o explicit loading or saving. And by "living" we mean interacting with other smart objects that encapsulate
 their own data aka *state*, as well, as *identity* and *behavior*, OOP "founding fathers": Bjarne Stroustrup and Grady Booch originally 
 envisioned - not (using C concepts) "structs": DTOs processed by "functions": service methods. Px100 Data is the first step towards 
-the return to true Object-Oriented CRUD-less future. No databases. Just limitless RAM that survives server restarts and is updated in a 
+the true Object-Oriented CRUD-less future. No databases. Just limitless RAM that survives server restarts and is updated in a 
 transactional manner. 
 
 Px100 Platform takes Px100 Data approach further - eliminating JSON/Java conversion and other DTO logic at the higher, UI levels, all of which
 (levels and layers) written in the same programming language: Java with infusion of interpreted Groovy. The same "smart" and "live" object model
 lives across the entire application with its screens, workflows, and security. While different modules can require different models of the same
 data (rare in a well-thought application), physical and worse, self-proclaimed "we always layer application like this" tiers should not. 
+
 Both the end user, and the programmer should view SaaS systems as logically modular, yet layer-less whole. Again, think of the whole browser-based 
 SaaS application as traditional desktop (e.g. Swing) one, yet transparently distributed for high availability and performance reasons. 
 The exact physical deployment, as well as what it takes to "load" and "save" the data to some persistent storage shouldn't matter at all for 
@@ -65,25 +66,26 @@ on in-memory cluster startup and saving it in a (configurable) write-through or 
    
 Generally you should pick one provider and stick with it. However, as crazy, as it sounds, if you wish to do something like that mid-project:
 
-* switching between in-memory provider e.g. Hazelcast and Ignite is completely transparent - just change the config. No data loss.
-* switching between in-memory and traditional providers would cost you the data, which still can be migrated between Momgo and 
-the on-disk database backing the in-memory data grid using our data dump/restore utility. 
+* switching between in-memory providers e.g. Hazelcast and Ignite is completely transparent - just change the config. No data loss.
+* switching between in-memory and traditional providers would cost you the data, which can still be migrated between Mongo and 
+the on-disk database backing the in-memory data grid. YOu can use our data dump/restore utility. 
 See InMemoryDatabase.emergencyShutdown() that dumps data to disk files (can be invoked manually) and RestoreUtility.
 You can also easily write your own universal cluster data migration tool under 20 lines of code. We didn't beacuse we consider switching between 
-Hazelcast/Ignite and Mongo highly unlikely. There is nothing wrong than unneeded code written just in case.        
+Hazelcast/Ignite and Mongo highly unlikely. There is nothing worse, than unneeded code written just in case.        
 
 In any case nothing changes usage-wise: the same API and the same entities (data types, etc.)
 
 The architecture is open, and you are welcome to write a storage provider for a new in-memory data grid or on-disk NoSQL database. 
-Px100 Data doesn't compromize, when it comes to performance leveraging all available provider optimizations e.g. indexes. You can be assured
+
+Px100 Data doesn't compromize, when it comes to performance - leveraging all available provider optimizations e.g. indexes. You can be assured
 you are using 100% of Hazelcast, Ignite, or Mongo. The latter is enough for small to moderate systems and with some tricks even terabytes of 
 data, while Ignite scales well out of the box at the cost of memory, which (hardware) should never be a limiting factor. Hazelcast currently 
-lags Ignite in query speed being faster when it comes to updates and using less memory. The choice is yours. Data grids like hazelcast and 
+lags Ignite in query speed being faster when it comes to updates, and also using less memory. The choice is yours. Data grids like Hazelcast and 
 Ignite are infinitely scalable horizontally - just add new servers/nodes.     
 
 Whatever provider you choose, just like JDBC, Px100 Data requires you to learn your "database" configuration- and tuning-wise. We provided 
 rich and comprehensive configuration samples for all three in the User Guide: the actual Spring configuration we use in production for 
-deployed Px100-built systems. Use it as a starting point.
+Px100-built systems. Use it as a starting point.
   
 ## What Px100 Data Can Do for You
 No more DTOs. Your entities can (and should) be as complex, as needed - encapsulating sub-objects, collections (Lists and Sets), 
@@ -106,7 +108,7 @@ Use the following Maven repository *(temporary measure - until the project is ad
     </repositories>
 ```
 
-### Core Maven Dependencies
+**Core Dependency**
 ```xml
     <dependency>
         <groupId>com.px100systems</groupId>
@@ -115,7 +117,7 @@ Use the following Maven repository *(temporary measure - until the project is ad
     </dependency>
 ```
 
-Add one of the following:
+Then add one of the following:
 
 **Persistent Ignite**
 ```xml
