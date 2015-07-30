@@ -96,7 +96,7 @@ No data migration when you add or remove fields and even entire entities - natur
 Orthogonal and minimalistic API with criteria queries.    
 
 ## Installation
-Use the foolowing Maven repository *(temporary measure - until the project is added to Maven Central)*
+Use the following Maven repository *(temporary measure - until the project is added to Maven Central)*
 ```xml
     <repositories>
         <repository>
