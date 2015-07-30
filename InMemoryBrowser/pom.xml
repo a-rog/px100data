@@ -2,10 +2,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.px100systems</groupId>
-    <artifactId>InMemoryBrowser</artifactId>
+    <artifactId>db-browser</artifactId>
     <version>0.3.0</version>
     <packaging>war</packaging>
-    <name>DB Browser</name>
+    <name>Px100 Data DB Browser</name>
+
+    <description>A browser to examine and change in-memory grid content</description>
+    <url>http://www.px100systems.com/px100.html</url>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License, Version 3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.en.html</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Alex Rogachevsky</name>
+            <email>alex@px100systems.com</email>
+            <organization>Px100 Systems</organization>
+            <organizationUrl>http://www.px100systems.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:a-rog/px100data.git</connection>
+        <developerConnection>scm:git:git@github.com:a-rog/px100data.git</developerConnection>
+        <url>git@github.com:a-rog/px100data.git</url>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -122,32 +147,32 @@
 
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>Px100Util</artifactId>
+            <artifactId>px100-utils</artifactId>
             <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>Px100Persistence</artifactId>
+            <artifactId>px100-persistence</artifactId>
             <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>Px100PersistenceAPI</artifactId>
+            <artifactId>px100-persistence-api</artifactId>
             <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>InMemoryJdbcPersistence</artifactId>
+            <artifactId>in-memory-jdbc-persistence</artifactId>
             <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>InMemoryHazelcastStorage</artifactId>
+            <artifactId>hazelcast-storage</artifactId>
             <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>InMemoryIgniteStorage</artifactId>
+            <artifactId>ignite-storage</artifactId>
             <version>0.3.0</version>
         </dependency>
     </dependencies>
