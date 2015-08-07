@@ -8,13 +8,6 @@
     <version>0.1.0</version>
     <name>Px100 Test</name>
 
-    <repositories>
-        <repository>
-            <id>Px100 Data Sonatype Repo</id>
-            <url>https://oss.sonatype.org/content/groups/public</url>
-        </repository>
-    </repositories>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.springframework.version>4.1.3.RELEASE</org.springframework.version>

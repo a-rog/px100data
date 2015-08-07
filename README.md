@@ -98,16 +98,7 @@ No data migration when you add or remove fields and even entire entities - natur
 Orthogonal and minimalistic API with criteria queries.    
 
 ## Installation
-Use the following Maven repository *(temporary measure - until the project is added to Maven Central)*
-```xml
-    <repositories>
-        <repository>
-            <id>Px100 Data GitHub Repo</id>
-            <url>https://oss.sonatype.org/content/groups/public</url>
-        </repository>
-    </repositories>
-```
-
+Px100 Data artifacts are in Maven Central. Use them like Spring, Apache, and other libraries.
 **Core Dependency**
 ```xml
     <dependency>
