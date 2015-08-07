@@ -99,6 +99,7 @@ Orthogonal and minimalistic API with criteria queries.
 
 ## Installation
 Px100 Data artifacts are in Maven Central. Use them like Spring, Apache, and other libraries.
+
 **Core Dependency**
 ```xml
     <dependency>
