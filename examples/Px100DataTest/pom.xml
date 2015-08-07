@@ -6,11 +6,12 @@
     <groupId>com.t34</groupId>
     <artifactId>Px100DataTest</artifactId>
     <version>0.1.0</version>
+    <name>Px100 Test</name>
 
     <repositories>
         <repository>
-            <id>Px100 Data GitHub Repo</id>
-            <url>https://github.com/a-rog/px100data/raw/master/releases</url>
+            <id>Px100 Data Sonatype Repo</id>
+            <url>https://oss.sonatype.org/content/groups/public</url>
         </repository>
     </repositories>
 

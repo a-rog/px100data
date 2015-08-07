@@ -103,7 +103,7 @@ Use the following Maven repository *(temporary measure - until the project is ad
     <repositories>
         <repository>
             <id>Px100 Data GitHub Repo</id>
-            <url>https://github.com/a-rog/px100data/raw/master/releases</url>
+            <url>https://oss.sonatype.org/content/groups/public</url>
         </repository>
     </repositories>
 ```
