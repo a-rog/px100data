@@ -3,6 +3,8 @@ You are welcome to write new storage and persistence providers for Px100 Data.
 
 Below are provider SPIs for your convenience.
 
+Providers depend on px100-persistence-api Maven artifact. You will most likely need px100-utils to implement serialization and use otehr cool features.
+
 ## In-Memory Storage Provider
 ```java
 public interface InMemoryStorageProvider {
