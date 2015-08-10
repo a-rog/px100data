@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+    <bean id="hzConfig" class="com.hazelcast.config.Config">
+        <property name="instanceName" value="WebNode"/>
+        <property name="groupConfig">
+            <bean class="com.hazelcast.config.GroupConfig">
+                <property name="name" value="@{persistence.clusterGroup}"/>
+                <property name="password" value="hazelcast"/> <!-- set it to semothing secure in Prod -->
+            </bean>
+        </property>
+        <property name="serializationConfig">
+            <bean class="com.hazelcast.config.SerializationConfig">
+                <property name="portableFactories">
+                    <map>
+                        <entry key="100">
+                            <bean class="com.px100systems.data.plugin.storage.hazelcast.CustomPortableFactory"/>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <!-- deploy that war to Tomcat (admin/admin) -->
+        <!--property name="managementCenterConfig">
+            <bean class="com.hazelcast.config.ManagementCenterConfig">
+                <property name="enabled" value="true"/>
+                <property name="url" value="http://localhost:8080/mancenter"/>
+            </bean>
+        </property-->
+        <property name="properties">
+            <props>
+                <!-- Deafult partition count is 271,
+                see http://stackoverflow.com/questions/16497041/why-hazelcast-has-default-partition-count-of-271-and-what-are-the-parameters-to
+                for details. Increase to keep partitions small (under 100M) or if teh cluster has more nodes than partitions. -->
+                <!--prop key="hazelcast.map.partition.count">271</prop-->
+
+                <!-- SILENT only prints critical conditions. OFF turns it off (to stop polluting the log) -->
+                <prop key="hazelcast.health.monitoring.level">OFF</prop>
+
+                <!-- I/O threads: default is 3  -->
+                <!--prop key="hazelcast.io.thread.count">3</prop-->
+
+                <!-- Async backup "back pressure" feature to prevent async backup buildup (if decide to use async backups). Read the Hz doc. -->
+                <!--prop key="hazelcast.backpressure.enabled">true</prop-->
+                <!--prop key="hazelcast.backpressure.syncwindow">100</prop-->
+
+                <!-- ICMP ping -->
+                <!--prop key="hazelcast.icmp.enabled">true</prop-->
+            </props>
+        </property>
+        <!-- Query thread pool size: uncomment to change -->
+        <!--property name ="executorConfigs">
+            <map>
+                <entry key="hz:query">
+                    <bean class="com.hazelcast.config.ExecutorConfig">
+                        <property name="poolSize" value="10"/>
+                    </bean>
+                </entry>
+            </map>
+        </property-->
+        <property name="mapConfigs">
+            <map>
+                <entry key="*">
+                    <bean class="com.hazelcast.config.MapConfig">
+                        <!--property name="inMemoryFormat" value="OBJECT"/-->
+                        <property name="backupCount" value="1"/> <!-- deafult, however better set explicitly -->
+                        <property name="asyncBackupCount" value="0"/>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+        <property name="networkConfig">
+            <bean class="com.hazelcast.config.NetworkConfig">
+                <property name="port" value="5705"/>
+                <!--property name="join">
+                    <bean class="com.hazelcast.config.JoinConfig">
+                        <property name="multicastConfig">
+                            <bean class="com.hazelcast.config.MulticastConfig">
+                                <property name="enabled" value="false"/>
+                            </bean>
+                        </property>
+                        <property name="tcpIpConfig">
+                            <bean class="com.hazelcast.config.TcpIpConfig">
+                                <property name="enabled" value="false"/>
+                                <property name="members">
+                                    <list>
+                                        <value>NOT REALLY NEEDED WITH AUTODISCOVERY</value>
+                                        <value>NOT REALLY NEEDED WITH AUTODISCOVERY</value>
+                                    </list>
+                                </property>
+                            </bean>
+                        </property>
+                        <property name="awsConfig">
+                            <bean class="com.hazelcast.config.AwsConfig">
+                                <property name="enabled" value="true"/>
+                                <property name="region" value="us-west-2"/>
+                                <property name="accessKey" value="NEEDED"/>
+                                <property name="secretKey" value="NEEDED"/>
+                                <property name="tagKey" value="px100stack"/>
+                                <property name="tagValue" value="px100POC"/>
+                            </bean>
+                        </property>
+                    </bean>
+                </property-->
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="storageProvider" class="com.px100systems.data.plugin.storage.hazelcast.HazelcastInMemoryStorage">
+        <property name="config" ref="hzConfig"/>
+    </bean>
+
+    <bean id="runtimeStorage" class="com.px100systems.data.core.RuntimeStorage">
+        <property name="provider" ref="storageProvider"/>
+    </bean>
+
+    <bean id="dataStorage" class="com.px100systems.data.core.InMemoryDatabase">
+        <property name="runtimeStorage" ref="runtimeStorage"/>
+
+        <property name="persistence" value="None"/>
+
+        <property name="baseEntityPackages">
+            <list>
+                <value>com.px100systems.platform.benchmark.entity</value>
+            </list>
+        </property>
+        <property name="backupDirectory" value="."/>
+    </bean>
+</beans>

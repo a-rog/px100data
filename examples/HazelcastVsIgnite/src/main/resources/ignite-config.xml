@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/util
+            http://www.springframework.org/schema/util/spring-util.xsd">
+    <bean id="igniteConfig" class="org.apache.ignite.configuration.IgniteConfiguration">
+        <property name="gridName" value="myDataGrid"/>
+
+        <!-- Optional arbitrary "tags" to enumerate nodes, group them into cluster groups, etc. -->
+        <property name="userAttributes">
+            <map>
+                <entry key="type" value="dev"/>
+            </map>
+        </property>
+
+        <property name="marshaller">
+            <bean class="org.apache.ignite.marshaller.optimized.OptimizedMarshaller">
+                <property name="requireSerializable" value="false"/>
+            </bean>
+        </property>
+
+        <property name="includeEventTypes">
+            <list>
+                <util:constant static-field="org.apache.ignite.events.EventType.EVT_NODE_JOINED"/>
+                <!--util:constant static-field="org.apache.ignite.events.EventType.EVT_CACHE_OBJECT_PUT"/-->
+                <!--util:constant static-field="org.apache.ignite.events.EventType.EVT_CACHE_OBJECT_READ"/-->
+            </list>
+        </property>
+
+        <property name="atomicConfiguration">
+            <bean class="org.apache.ignite.configuration.AtomicConfiguration">
+                <property name="backups" value="1"/>
+                <property name="cacheMode" value="PARTITIONED"/>
+                <!-- Not using native ID generators (aka "sequences") anyway:  property name="atomicSequenceReserveSize" value="1000"/-->
+            </bean>
+        </property>
+
+        <!--property name="publicThreadPoolSize" value="15"/-->
+        <!--property name="managementThreadPoolSize" value="10"/-->
+        <!--property name="systemThreadPoolSize" value="10"/-->
+        <!--property name="utilityCachePoolSize" value="10"/-->
+        <!--property name="marshallerCachePoolSize" value="10"/-->
+
+        <property name="metricsLogFrequency" value="0"/>
+        <property name="metricsUpdateFrequency" value="15000"/>
+
+        <property name="peerClassLoadingEnabled" value="false"/>
+        <!--property name="peerClassLoadingThreadPoolSize" value="10"/-->
+
+        <property name="transactionConfiguration">
+            <bean class="org.apache.ignite.configuration.TransactionConfiguration">
+                <property name="defaultTxConcurrency" value="PESSIMISTIC"/>
+                <property name="defaultTxIsolation" value="READ_COMMITTED"/>
+                <property name="defaultTxTimeout" value="30000"/>
+            </bean>
+        </property>
+
+        <!-- Uncomment to use static IP discovery (instead of default multicast: see TcpDiscoveryMulticastIpFinder) -->
+        <!--property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="ipFinder">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+                        <property name="addresses">
+                            <list>
+                                <value>127.0.0.1:47500..47509</value>
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property-->
+
+        <!-- Uncomment to use AWS S3 based discovery (instead of default multicast: see TcpDiscoveryMulticastIpFinder) -->
+        <!--property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="ipFinder">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.s3.TcpDiscoveryS3IpFinder">
+                        <property name="awsCredentials">
+                            <bean class="com.amazonaws.auth.BasicAWSCredentials">
+                                <constructor-arg value="xxx_ACCESS_KEY_ID" />
+                                <constructor-arg value="xxx_SECRET_ACCESS_KEY" />
+                            </bean>
+                        </property>
+                        <property name="bucketName" value="xxx_BUCKET_NAME"/>
+                    </bean>
+                </property>
+            </bean>
+        </property-->
+    </bean>
+
+    <bean id="storageProvider" class="com.px100systems.data.plugin.storage.ignite.IgniteInMemoryStorage">
+        <property name="config" ref="igniteConfig"/>
+    </bean>
+
+    <bean id="runtimeStorage" class="com.px100systems.data.core.RuntimeStorage">
+        <property name="provider" ref="storageProvider"/>
+    </bean>
+
+    <bean id="dataStorage" class="com.px100systems.data.core.InMemoryDatabase">
+        <property name="runtimeStorage" ref="runtimeStorage"/>
+
+        <property name="persistence" value="None"/>
+
+        <property name="baseEntityPackages">
+            <list>
+                <value>com.px100systems.platform.benchmark.entity</value>
+            </list>
+        </property>
+        <property name="backupDirectory" value="."/>
+    </bean>
+</beans>

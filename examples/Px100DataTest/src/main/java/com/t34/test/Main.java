@@ -27,5 +27,7 @@ public class Main {
 		} catch (DataStorageException e) {
 			throw new RuntimeException(e);
 		}
+		
+		((ClassPathXmlApplicationContext)context).close();
 	}
 }

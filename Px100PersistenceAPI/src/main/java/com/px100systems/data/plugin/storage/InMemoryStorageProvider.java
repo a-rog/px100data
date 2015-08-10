@@ -66,6 +66,11 @@ public interface InMemoryStorageProvider {
 	void start();
 
 	/**
+	 * Stop the cluster
+	 */
+	void shutdown();
+
+	/**
 	 * Create a storage "unit": hazelcast map or Ignite cache.
 	 * @param unitName typically entity name + tenantId
 	 * @param indexedFields field[*] where "*" suffix indicates if the index should be ordered (Hazelcast specific)

@@ -53,7 +53,6 @@ import org.apache.ignite.cache.query.SqlQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.transactions.Transaction;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Required;
 import javax.cache.Cache;
 import javax.cache.processor.EntryProcessorException;
@@ -97,7 +96,7 @@ import java.util.concurrent.TimeUnit;
  * @author Alex Rogachevsky
  */
 @SuppressWarnings("JavadocReference")
-public class IgniteInMemoryStorage implements InMemoryStorageProvider, DisposableBean {
+public class IgniteInMemoryStorage implements InMemoryStorageProvider {
 	private static Log log = LogFactory.getLog(IgniteInMemoryStorage.class);
 
 	private IgniteConfiguration config;
@@ -133,8 +132,8 @@ public class IgniteInMemoryStorage implements InMemoryStorageProvider, Disposabl
 	}
 
 	@Override
-	public void destroy() throws Exception {
-		log.info("Forcing Ignite node stop");
+	public void shutdown() {
+		log.info("Forcing Ignite cluster stop");
 		Ignition.stopAll(false);
 	}
 

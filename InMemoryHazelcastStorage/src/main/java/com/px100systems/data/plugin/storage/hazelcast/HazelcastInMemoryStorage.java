@@ -46,7 +46,6 @@ import com.px100systems.data.plugin.storage.InMemoryStorageLoader;
 import com.px100systems.data.plugin.storage.InMemoryStorageProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.DisposableBean;
 import com.hazelcast.core.ExecutionCallback;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
@@ -100,7 +99,7 @@ import org.springframework.beans.factory.annotation.Required;
  * @author Alex Rogachevsky
 */
 @SuppressWarnings("JavadocReference")
-public class HazelcastInMemoryStorage implements InMemoryStorageProvider, DisposableBean {
+public class HazelcastInMemoryStorage implements InMemoryStorageProvider {
 	private static Log log = LogFactory.getLog(HazelcastInMemoryStorage.class);
 
 	private Object config;
@@ -236,7 +235,7 @@ public class HazelcastInMemoryStorage implements InMemoryStorageProvider, Dispos
 	}
 
 	@Override
-	public void destroy() throws Exception {
+	public void shutdown() {
 		log.info("Forcing Hazelcast shutdown in a Web app");
 		com.hazelcast.core.Hazelcast.shutdownAll();
 

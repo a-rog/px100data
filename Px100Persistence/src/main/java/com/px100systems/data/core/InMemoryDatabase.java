@@ -277,6 +277,7 @@ public class InMemoryDatabase extends DatabaseStorage {
 		stopped = true;
 		if (persistenceServer != null)
 			persistenceServer.flush();
+		getRuntimeStorage().getProvider().shutdown();
 	}
 
 	@Override

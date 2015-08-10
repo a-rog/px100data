@@ -6,12 +6,12 @@
 	<packaging>pom</packaging>
 	<name>Px100 Data Build Group</name>
 	
-    <distributionManagement>
+    <!--distributionManagement>
         <repository>
             <id>repo</id>
             <url>https://github.com/a-rog/px100data/raw/master/releases</url>
         </repository>
-    </distributionManagement>
+    </distributionManagement-->
 
 	<modules>
 		<module>Px100Util</module>

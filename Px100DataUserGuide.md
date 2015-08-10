@@ -43,10 +43,6 @@ The example below uses Ignite:
                 </bean>
             </property>
     
-            <property name="gridLogger">
-                <bean class="org.apache.ignite.logger.log4j.Log4JLogger"/>
-            </property>
-    
             <!--property name="publicThreadPoolSize" value="15"/-->
             <!--property name="managementThreadPoolSize" value="10"/-->
             <!--property name="systemThreadPoolSize" value="10"/-->
