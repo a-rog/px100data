@@ -36,13 +36,18 @@ public interface InMemoryStorageProvider {
 	void start();
 
 	/**
+	 * Stop the cluster
+	 */
+	void shutdown();
+
+	/**
 	 * Create a storage "unit": hazelcast map or Ignite cache.
 	 * @param unitName typically entity name + tenantId
 	 * @param indexedFields field[*] where "*" suffix indicates if the index should be ordered (Hazelcast specific)
 	 * @param cls class (non-transient units are homogeneous)
 	 * @param transientData if the unit is transient (runtime-only) or persisted (Entity-based)
 	 */
-	void createMap(Class<?> cls, String unitName, Map<String, Class<?>> indexedFields, boolean transientData);
+	void createMap(Class<?> cls, String unitName, Map<String, Class<?>> indexedFields, List<CompoundIndexDescriptor> compoundIndexes, boolean transientData);
 
 	/**
 	 * Get a single persisted entry: entity or service bean
@@ -241,7 +246,7 @@ public interface TraditionalStorageProvider {
 	 * @param unitName entity name
 	 * @param indexedFields indexed fields (normal, w/o any suffixes)
 	 */
-	void createEntity(String unitName, Collection<String> indexedFields);
+	void createEntity(String unitName, Collection<String> indexedFields, List<CompoundIndexDescriptor> compoundIndexes);
 
 	/**
 	 * Drop entity
@@ -263,7 +268,7 @@ public interface TraditionalStorageProvider {
 	 * @param unitName unit (table) name
 	 * @param newIndexes new indexes to create
 	 */
-	void addIndexes(String unitName, List<String> newIndexes);
+	void addIndexes(String unitName, List<String> newIndexes, List<CompoundIndexDescriptor> compoundIndexes);
 
 	/**
 	 * Drop index

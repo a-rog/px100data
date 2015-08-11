@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import com.px100systems.data.core.CompoundIndexDescriptor;
 import com.px100systems.data.core.Criteria;
 import com.px100systems.data.core.DataStorageException;
 import com.px100systems.data.core.Delete;
@@ -77,7 +78,7 @@ public interface InMemoryStorageProvider {
 	 * @param cls class (non-transient units are homogeneous)
 	 * @param transientData if the unit is transient (runtime-only) or persisted (Entity-based)
 	 */
-	void createMap(Class<?> cls, String unitName, Map<String, Class<?>> indexedFields, boolean transientData);
+	void createMap(Class<?> cls, String unitName, Map<String, Class<?>> indexedFields, List<CompoundIndexDescriptor> compoundIndexes, boolean transientData);
 
 	/**
 	 * Get a single persisted entry: entity or service bean

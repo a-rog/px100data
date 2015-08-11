@@ -64,10 +64,12 @@ public abstract class DatabaseStorage implements InitializingBean, DisposableBea
 		private String unitName;
 		private int tenantId;
 		private Map<String, Class<?>> indexes;
+		private List<CompoundIndexDescriptor> compoundIndexes;
 		private Class<?> entityClass;
 
-		public EntityInfo(Class<?> entityClass, int tenantId, String unitName, Map<String, Class<?>> indexes) {
+		public EntityInfo(Class<?> entityClass, int tenantId, String unitName, Map<String, Class<?>> indexes, List<CompoundIndexDescriptor> compoundIndexes) {
 			this.indexes = indexes;
+			this.compoundIndexes = compoundIndexes;
 			this.unitName = unitName;
 			this.entityClass = entityClass;
 			this.tenantId = tenantId;
@@ -92,6 +94,10 @@ public abstract class DatabaseStorage implements InitializingBean, DisposableBea
 
 		public Map<String, Class<?>> getRawIndexes() {
 			return indexes;
+		}
+
+		public List<CompoundIndexDescriptor> getCompoundIndexes() {
+			return compoundIndexes;
 		}
 
 		public int getTenantId() {
@@ -191,11 +197,12 @@ public abstract class DatabaseStorage implements InitializingBean, DisposableBea
 		List<EntityInfo> entities = new ArrayList<>();
 		for (Class<? extends Entity> entityClass : getConfiguredEntities().values()) {
 			Map<String, Class<?>> indexes = Entity.indexes(entityClass);
+			List<CompoundIndexDescriptor> compoundIndexes = Entity.compoundIndexes(entityClass);
 			if (tenants.isEmpty())
-				entities.add(new EntityInfo(entityClass, 0, Entity.unitFromClass(entityClass, 0), indexes));
+				entities.add(new EntityInfo(entityClass, 0, Entity.unitFromClass(entityClass, 0), indexes, compoundIndexes));
 			else
 				for (BaseTenantConfig tenant : tenants)
-					entities.add(new EntityInfo(entityClass, tenant.getId(), Entity.unitFromClass(entityClass, tenant.getId()), indexes));
+					entities.add(new EntityInfo(entityClass, tenant.getId(), Entity.unitFromClass(entityClass, tenant.getId()), indexes, compoundIndexes));
 		}
 
 		init(entities, initializer != null);
@@ -222,7 +229,7 @@ public abstract class DatabaseStorage implements InitializingBean, DisposableBea
 
 	public void onNewTenant(BaseTenantConfig tenant) throws DataStorageException {
 		for (Class<? extends Entity> entityClass : configuredEntities.values())
-			runtimeStorage.getProvider().createMap(entityClass, Entity.unitFromClass(entityClass, tenant.getId()), Entity.indexes(entityClass), false);
+			runtimeStorage.getProvider().createMap(entityClass, Entity.unitFromClass(entityClass, tenant.getId()), Entity.indexes(entityClass), Entity.compoundIndexes(entityClass), false);
 		runtimeStorage.onNewTenant(tenant);
 	}
 

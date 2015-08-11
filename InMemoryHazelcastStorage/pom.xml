@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.px100systems</groupId>
 	<artifactId>hazelcast-storage</artifactId>
-	<version>0.3.0</version>
+	<version>0.3.1</version>
 	<name>Hazelcast In-Memory Storage Provider</name>
 
     <description>Hazelcast In-Memory Storage Provider for Px100 Data</description>
@@ -46,7 +46,7 @@
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<com.hazelcast.version>3.5</com.hazelcast.version>
+		<com.hazelcast.version>3.5.1</com.hazelcast.version>
 		<java.target.version>1.8</java.target.version>
 	</properties>
 
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>com.px100systems</groupId>
   			<artifactId>px100-persistence-api</artifactId>
-			<version>0.3.0</version>
+			<version>0.3.1</version>
 		</dependency>
 	
 		<dependency>

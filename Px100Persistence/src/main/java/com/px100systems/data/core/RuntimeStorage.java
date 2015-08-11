@@ -60,7 +60,7 @@ public class RuntimeStorage {
 
 	public void onNewTenant(BaseTenantConfig tenant) throws DataStorageException {
 		for (Class<?> cls : transientUnits)
-			provider.createMap(cls, Entity.unitFromClass(cls, tenant.getId()), Entity.indexes(cls), true);
+			provider.createMap(cls, Entity.unitFromClass(cls, tenant.getId()), Entity.indexes(cls), Entity.compoundIndexes(cls), true);
 	}
 
 	/**
@@ -78,7 +78,7 @@ public class RuntimeStorage {
 			tenantIds.add(0);
 
 		for (Integer tenantId : tenantIds)
-			provider.createMap(cls, Entity.unitFromClass(cls, tenantId), Entity.indexes(cls), true);
+			provider.createMap(cls, Entity.unitFromClass(cls, tenantId), Entity.indexes(cls), Entity.compoundIndexes(cls), true);
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class RuntimeStorage {
 	 * @param tenantId tenant ID
 	 */
 	public void createTransientUnit(Class<?> cls, int tenantId) {
-		provider.createMap(cls, Entity.unitFromClass(cls, tenantId), Entity.indexes(cls), true);
+		provider.createMap(cls, Entity.unitFromClass(cls, tenantId), Entity.indexes(cls), Entity.compoundIndexes(cls), true);
 	}
 
 	public void createIdGenerator(String name, Long initialValue) {

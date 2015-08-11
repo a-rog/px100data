@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.px100systems</groupId>
     <artifactId>mongo-storage</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1</version>
     <name>MongoDB Database Storage Provider</name>
 
     <description>Mongo Storage Provider for Px100 Data</description>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.px100systems</groupId>
             <artifactId>px100-persistence-api</artifactId>
-            <version>0.3.0</version>
+            <version>0.3.1</version>
         </dependency>
 
         <dependency>

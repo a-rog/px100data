@@ -467,6 +467,9 @@ Only simple data: String, Date, Integer, Long, Double, and Boolean can be indexe
 Use artificial getters for that.<br/>
 **Note:** Hazelcast doesn't handle indexed nulls with grace, so make sure to use some "null value" like an empty string, zero, or 
 conveniently defined Criteria.NULL_DATE.
+
+@CompoundIndexes and @CompoundIndex - entity-level compound indexes (supported by Mongo and Ignite) espcially useful for explicit descending
+indexing. Example: *@CompoundIndexes({@CompoundIndex(name="unique_compound_index_Name", fields={"field1 ASC", "field2 DESC"})})*
  
 @SerializedGetter - specified for artificial getters the serialization/query framework should care about, as you can have tons of other 
 getters it shouldn't. Annotating a normal getter of a serialized field will result in "double serialization" error.
@@ -498,16 +501,16 @@ your unique multi-tenancy needs:
 If your application is single-tenant, all you need to remember is that your default tenant ID is zero - when you examine raw data in Mongo or 
 data grids. 
 
-### Ignite-Specific Features and Caveats
+## Ignite-Specific Features and Caveats
 @QueryField - see above 
  
-### Hazelcast-Specific Features and Caveats 
+## Hazelcast-Specific Features and Caveats 
 1. Implement Portable serialization as shown above in BaseEntity.
 2. Hazelcast relies on Comparable for ORDER BY logic. The framework provides a universal reflection-based fallback, however you should
 implement special orderByXyz methods for every xyz field (including artificial getter ones) you use in ordered Criteria queries. See Entity
 for examples.  
 
-### Mongo-Specific Features and Caveats 
+## Mongo-Specific Features and Caveats 
 None at all.
 
 ## Usage Examples

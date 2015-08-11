@@ -19,8 +19,10 @@ package com.px100systems.data.core;
 import com.px100systems.util.serialization.SerializedGetter;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -147,6 +149,17 @@ public abstract class Entity extends StoredBean {
 		Class<?> superclass = entityClass.getSuperclass();
 		if (superclass != null && !superclass.equals(Object.class))
 			result.putAll(queryFields(superclass));
+
+		return result;
+	}
+
+	public static List<CompoundIndexDescriptor> compoundIndexes(Class<?> entityClass) {
+		List<CompoundIndexDescriptor> result = new ArrayList<>();
+
+		CompoundIndexes indexes = entityClass.getAnnotation(CompoundIndexes.class);
+		if (indexes != null)
+			for (CompoundIndex index : indexes.value())
+				result.add(new CompoundIndexDescriptor(entityClass, index.name(), index.fields()));
 
 		return result;
 	}

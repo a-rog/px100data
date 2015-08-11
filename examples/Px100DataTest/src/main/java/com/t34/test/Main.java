@@ -11,7 +11,7 @@ import static com.px100systems.data.core.Criteria.*;
 
 public class Main {
 	public static void main(String[] args) {
-		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:config.xml");
+		ApplicationContext context = new ClassPathXmlApplicationContext("classpath:ignite-config.xml"); // substitute with hazelcast-config.xml to test Hazelcast
 		DatabaseStorage ds = context.getBean("dataStorage", DatabaseStorage.class);
 
 		try {

@@ -38,6 +38,7 @@ import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.DataSerializable;
 import com.hazelcast.util.IterationType;
+import com.px100systems.data.core.CompoundIndexDescriptor;
 import com.px100systems.data.core.EntityDescriptor;
 import com.px100systems.data.core.InPlaceUpdate;
 import com.px100systems.data.plugin.persistence.PersistenceLogEntry;
@@ -284,7 +285,7 @@ public class HazelcastInMemoryStorage implements InMemoryStorageProvider {
 	}
 
 	@Override
-	public void createMap(Class<?> cls, String unitName, Map<String, Class<?>> indexFields, boolean transientData) {
+	public void createMap(Class<?> cls, String unitName, Map<String, Class<?>> indexFields, List<CompoundIndexDescriptor> compoundIndexes, boolean transientData) {
 		IMap<Key, StoredBean> map = hz.getMap(unitName);
 
 		for (String indexField : indexFields.keySet()) {
@@ -295,6 +296,8 @@ public class HazelcastInMemoryStorage implements InMemoryStorageProvider {
 			}
 			map.addIndex(indexField, ordered);
 		}
+
+		// AlexR: Hazelcast currently (v.3.5.1) does not support compound indexes
 	}
 
 	@Override

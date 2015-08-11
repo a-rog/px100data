@@ -17,6 +17,7 @@
 package com.px100systems.data.plugin.storage.ignite;
 
 import com.google.gson.Gson;
+import com.px100systems.data.core.CompoundIndexDescriptor;
 import com.px100systems.data.core.Criteria;
 import com.px100systems.data.core.DataStorageException;
 import com.px100systems.data.core.Delete;
@@ -52,6 +53,7 @@ import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.cache.query.SqlQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.lang.IgniteBiTuple;
 import org.apache.ignite.transactions.Transaction;
 import org.springframework.beans.factory.annotation.Required;
 import javax.cache.Cache;
@@ -63,6 +65,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -154,7 +157,7 @@ public class IgniteInMemoryStorage implements InMemoryStorageProvider {
 	}
 
 	@Override
-	public void createMap(Class<?> cls, String unitName, Map<String, Class<?>> indexedFields, boolean transientData) {
+	public void createMap(Class<?> cls, String unitName, Map<String, Class<?>> indexedFields, List<CompoundIndexDescriptor> compoundIndexes, boolean transientData) {
 		IgniteCache<AffinityKey<Long>, ?> cache = ignite.cache(unitName);
 		if (cache != null)
 			return;
@@ -175,7 +178,7 @@ public class IgniteInMemoryStorage implements InMemoryStorageProvider {
 
 		Map<String, Class<?>> querydFields = Entity.queryFields(cls);
 
-		if (!indexedFields.isEmpty() || !querydFields.isEmpty()) {
+		if (!indexedFields.isEmpty() || !querydFields.isEmpty() || !compoundIndexes.isEmpty()) {
 			CacheTypeMetadata type = new CacheTypeMetadata();
 			type.setValueType(cls.getName());
 
@@ -192,6 +195,15 @@ public class IgniteInMemoryStorage implements InMemoryStorageProvider {
 
 			for (Map.Entry<String, Class<?>> e : querydFields.entrySet())
 				type.getQueryFields().put(e.getKey(), e.getValue());
+
+			for (CompoundIndexDescriptor ci : compoundIndexes) {
+				LinkedHashMap<String, IgniteBiTuple<Class<?>,Boolean>> fields = new LinkedHashMap<>();
+				for (CompoundIndexDescriptor.Field field : ci.getFields()) {
+					fields.put(field.getName(), new IgniteBiTuple<>(field.getType(), !field.isDescending()));
+					type.getQueryFields().put(field.getName(), field.getType());
+				}
+				type.getGroups().put(ci.getName(), fields);
+			}
 
 			cacheConfig.setTypeMetadata(Collections.singletonList(type));
 		}

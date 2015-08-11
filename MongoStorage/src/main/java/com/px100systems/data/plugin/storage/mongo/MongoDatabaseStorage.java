@@ -31,6 +31,7 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.ReplaceOneModel;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.WriteModel;
+import com.px100systems.data.core.CompoundIndexDescriptor;
 import com.px100systems.data.core.Criteria;
 import com.px100systems.data.core.DataStorageException;
 import com.px100systems.data.core.Delete;
@@ -117,9 +118,15 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 			MongoCursor<Document> idxCursor = db.getCollection(e.getKey()).listIndexes().iterator();
 			try {
 				while (idxCursor.hasNext()) {
-					String name = idxCursor.next().get("key", Document.class).keySet().iterator().next();
-					if (!name.startsWith("_"))
-						e.getValue().add(name);
+					Document idx = idxCursor.next();
+					String indexName = idx.get("name", String.class);
+					if (CompoundIndexDescriptor.isCompondIndexName(indexName))
+						e.getValue().add(indexName);
+					else {
+						String name = idx.get("key", Document.class).keySet().iterator().next();
+						if (!name.startsWith("_"))
+							e.getValue().add(name);
+					}
 				}
 			} finally {
 				idxCursor.close();
@@ -129,11 +136,19 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 		return result;
 	}
 
-	public void createEntity(String unitName, Collection<String> indexedFields) {
+	public void createEntity(String unitName, Collection<String> indexedFields, List<CompoundIndexDescriptor> compoundIndexes) {
 		MongoDatabase db = mongoClient.getDatabase(databaseName);
 		db.createCollection(unitName);
 
 		List<IndexModel> indexes = new ArrayList<>();
+
+		for (CompoundIndexDescriptor ci : compoundIndexes) {
+			Map<String, Object> fields = new HashMap<>();
+			for (CompoundIndexDescriptor.Field field : ci.getFields())
+				fields.put(field.getName(), field.isDescending() ? "-1" : "1");
+			indexes.add(new IndexModel(new Document(fields), new IndexOptions().name(indexName(ci.getName())).background(true)));
+		}
+
 		for (String idx : indexedFields)
 			indexes.add(new IndexModel(new Document(idx, 1), new IndexOptions().name(indexName(idx)).background(true)));
 
@@ -151,10 +166,18 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 	public void updateEntity(String unitName, SerializationDefinition def) {
 	}
 
-	public void addIndexes(String unitName, List<String> newIndexes) {
+	public void addIndexes(String unitName, List<String> newIndexes, List<CompoundIndexDescriptor> newCompoundIndexes) {
 		MongoDatabase db = mongoClient.getDatabase(databaseName);
 
 		List<IndexModel> indexes = new ArrayList<>();
+
+		for (CompoundIndexDescriptor ci : newCompoundIndexes) {
+			Map<String, Object> fields = new HashMap<>();
+			for (CompoundIndexDescriptor.Field field : ci.getFields())
+				fields.put(field.getName(), field.isDescending() ? "-1" : "1");
+			indexes.add(new IndexModel(new Document(fields), new IndexOptions().name(indexName(ci.getName())).background(true)));
+		}
+
 		for (String idx : newIndexes)
 			indexes.add(new IndexModel(new Document(idx, 1), new IndexOptions().name(indexName(idx)).background(true)));
 

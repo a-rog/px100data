@@ -16,6 +16,7 @@
  */
 package com.px100systems.data.plugin.storage;
 
+import com.px100systems.data.core.CompoundIndexDescriptor;
 import com.px100systems.data.core.Criteria;
 import com.px100systems.data.core.DataStorageException;
 import com.px100systems.data.core.Delete;
@@ -46,7 +47,7 @@ public interface TraditionalStorageProvider {
 	 * @param unitName entity name
 	 * @param indexedFields indexed fields (normal, w/o any suffixes)
 	 */
-	void createEntity(String unitName, Collection<String> indexedFields);
+	void createEntity(String unitName, Collection<String> indexedFields, List<CompoundIndexDescriptor> compoundIndexes);
 
 	/**
 	 * Drop entity
@@ -68,7 +69,7 @@ public interface TraditionalStorageProvider {
 	 * @param unitName unit (table) name
 	 * @param newIndexes new indexes to create
 	 */
-	void addIndexes(String unitName, List<String> newIndexes);
+	void addIndexes(String unitName, List<String> newIndexes, List<CompoundIndexDescriptor> compoundIndexes);
 
 	/**
 	 * Drop index

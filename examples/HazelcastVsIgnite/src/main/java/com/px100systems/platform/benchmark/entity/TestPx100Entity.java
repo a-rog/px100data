@@ -8,7 +8,6 @@ import com.px100systems.data.core.Index;
 import com.px100systems.data.plugin.storage.hazelcast.PortableImpl;
 import com.px100systems.util.serialization.SerializationDefinition;
 import com.px100systems.util.serialization.SerializedCollection;
-
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;

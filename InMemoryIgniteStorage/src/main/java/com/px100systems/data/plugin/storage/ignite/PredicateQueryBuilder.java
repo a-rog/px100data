@@ -45,8 +45,11 @@ import java.util.Date;
 public class PredicateQueryBuilder implements Criteria.Converter<String> {
 	@Override
 	public String convert(and predicate) {
-		if (predicate.getMembers().length < 2)
-			throw new RuntimeException("Empty or singular AND criteria: " + predicate);
+		if (predicate.getMembers().length == 0)
+			throw new RuntimeException("Empty AND criteria: " + predicate);
+
+		if (predicate.getMembers().length == 1)
+			return predicate.getMembers()[0].convert(this);
 
 		StringBuilder result = new StringBuilder();
 		for (Criteria q : predicate.getMembers()) {
@@ -59,8 +62,11 @@ public class PredicateQueryBuilder implements Criteria.Converter<String> {
 
 	@Override
 	public String convert(or predicate) {
-		if (predicate.getMembers().length < 2)
-			throw new RuntimeException("Empty or singular OR criteria: " + predicate);
+		if (predicate.getMembers().length == 0)
+			throw new RuntimeException("Empty OR criteria: " + predicate);
+
+		if (predicate.getMembers().length == 1)
+			return predicate.getMembers()[0].convert(this);
 
 		StringBuilder result = new StringBuilder();
 		for (Criteria q : predicate.getMembers()) {

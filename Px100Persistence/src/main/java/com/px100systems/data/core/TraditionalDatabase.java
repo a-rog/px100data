@@ -23,8 +23,10 @@ import org.springframework.beans.factory.annotation.Required;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Traditional (remote) database like Mongo. Synchronizes its state of "tables" and "indexes" with the currently configured entities on startup.<br>
@@ -50,10 +52,14 @@ public class TraditionalDatabase extends DatabaseStorage {
 		for (EntityInfo entity : entities) {
 			List<String> indexes = existingEntities.get(entity.getUnitName());
 			if (indexes == null)
-				provider.createEntity(entity.getUnitName(), entity.getIndexes().keySet());
+				provider.createEntity(entity.getUnitName(), entity.getIndexes().keySet(), entity.getCompoundIndexes());
 			else {
+				Set<String> compoundIndexNames = new HashSet<>();
+				for (CompoundIndexDescriptor ci : entity.getCompoundIndexes())
+					compoundIndexNames.add(ci.getName());
+
 				for (String index : indexes)
-					if (!entity.getIndexes().containsKey(index))
+					if (!entity.getIndexes().containsKey(index) && !compoundIndexNames.contains(index))
 						provider.dropIndex(entity.getUnitName(), index);
 
 				provider.updateEntity(entity.getUnitName(), SerializationDefinition.get(entity.getEntityClass()));
@@ -62,8 +68,14 @@ public class TraditionalDatabase extends DatabaseStorage {
 				for (String index : entity.getIndexes().keySet())
 					if (!indexes.contains(index))
 						newIndexes.add(index);
+
+				List<CompoundIndexDescriptor> newCompoundIndexes = new ArrayList<>();
+				for (CompoundIndexDescriptor ci : entity.getCompoundIndexes())
+					if (!indexes.contains(ci.getName()))
+						newCompoundIndexes.add(ci);
+
 				if (!newIndexes.isEmpty())
-					provider.addIndexes(entity.getUnitName(), newIndexes);
+					provider.addIndexes(entity.getUnitName(), newIndexes, newCompoundIndexes);
 
 				existingEntities.remove(entity.getUnitName());
 
@@ -123,6 +135,7 @@ public class TraditionalDatabase extends DatabaseStorage {
 
 	@Override
 	protected void shutdown() {
+		getRuntimeStorage().getProvider().shutdown();
 	}
 
 	@Override

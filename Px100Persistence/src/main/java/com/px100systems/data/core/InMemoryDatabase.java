@@ -212,13 +212,13 @@ public class InMemoryDatabase extends DatabaseStorage {
 				getRuntimeStorage().getProvider().setAtomicLong("status", null, persistence != PersistenceMode.None ? STATUS_LOADING : STATUS_ACTIVE);
 
 				getRuntimeStorage().getProvider().createMap(PersistenceLogEntry.class, PersistenceLogEntry.UNIT_NAME,
-					Entity.indexes(PersistenceLogEntry.class), false); // "Transient" logically, however needs to be transactional, not atomic (Ignite-specific)
+					Entity.indexes(PersistenceLogEntry.class), Entity.compoundIndexes(PersistenceLogEntry.class), false); // "Transient" logically, however needs to be transactional, not atomic (Ignite-specific)
 				getRuntimeStorage().createIdGenerator(PersistenceLogEntry.UNIT_NAME, 0L);
 
 				logSaveTime(new Date().getTime());
 
 				for (EntityInfo ei : entities)
-					getRuntimeStorage().getProvider().createMap(ei.getEntityClass(), ei.getUnitName(), ei.getRawIndexes(), false);
+					getRuntimeStorage().getProvider().createMap(ei.getEntityClass(), ei.getUnitName(), ei.getRawIndexes(), ei.getCompoundIndexes(), false);
 			}
 			lock.unlock();
 		}

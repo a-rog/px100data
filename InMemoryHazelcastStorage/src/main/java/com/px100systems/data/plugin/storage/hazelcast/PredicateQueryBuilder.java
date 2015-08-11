@@ -58,6 +58,12 @@ public class PredicateQueryBuilder implements Criteria.Converter<Predicate<Hazel
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Predicate<HazelcastInMemoryStorage.Key, StoredBean> convert(and predicate) {
+		if (predicate.getMembers().length == 0)
+			throw new RuntimeException("Empty AND criteria: " + predicate);
+
+		if (predicate.getMembers().length == 1)
+			return predicate.getMembers()[0].convert(this);
+
 		Predicate[] q = new Predicate[predicate.getMembers().length];
 		for (int i = 0; i < q.length; i++)
 			q[i] = predicate.getMembers()[i].convert(this);
@@ -67,6 +73,12 @@ public class PredicateQueryBuilder implements Criteria.Converter<Predicate<Hazel
 	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Predicate<HazelcastInMemoryStorage.Key, StoredBean> convert(or predicate) {
+		if (predicate.getMembers().length == 0)
+			throw new RuntimeException("Empty OR criteria: " + predicate);
+
+		if (predicate.getMembers().length == 1)
+			return predicate.getMembers()[0].convert(this);
+
 		Predicate[] q = new Predicate[predicate.getMembers().length];
 		for (int i = 0; i < q.length; i++)
 			q[i] = predicate.getMembers()[i].convert(this);
