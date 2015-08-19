@@ -1,0 +1,130 @@
+#!/bin/bash
+if [ $# -eq 0 ]; then
+  echo "USAGE: bundles <version>"
+fi
+
+project="Px100Util"
+artifact="px100-utils"
+cd $project/target
+rm -r bundle
+mkdir bundle
+cp $artifact-$1.jar bundle
+cp ../pom.xml bundle/$artifact-$1.pom
+cd ../src
+jar -cvf ../target/bundle/$artifact-$1-sources.jar *
+cd ../../px100data-javadoc
+jar -cvf ../$project/target/bundle/$artifact-$1-javadoc.jar *
+cd ../$project/target/bundle
+gpg -ab $artifact-$1.jar
+gpg -ab $artifact-$1.pom
+gpg -ab $artifact-$1-sources.jar
+gpg -ab $artifact-$1-javadoc.jar
+jar -cvf bundle.jar *
+
+project="Px100PersistenceAPI"
+artifact="px100-persistence-api"
+cd ../../../$project/target
+rm -r bundle
+mkdir bundle
+cp $artifact-$1.jar bundle
+cp ../pom.xml bundle/$artifact-$1.pom
+cd ../src
+jar -cvf ../target/bundle/$artifact-$1-sources.jar *
+cd ../../px100data-javadoc
+jar -cvf ../$project/target/bundle/$artifact-$1-javadoc.jar *
+cd ../$project/target/bundle
+gpg -ab $artifact-$1.jar
+gpg -ab $artifact-$1.pom
+gpg -ab $artifact-$1-sources.jar
+gpg -ab $artifact-$1-javadoc.jar
+jar -cvf bundle.jar *
+
+project="Px100Persistence"
+artifact="px100-persistence"
+cd ../../../$project/target
+rm -r bundle
+mkdir bundle
+cp $artifact-$1.jar bundle
+cp ../pom.xml bundle/$artifact-$1.pom
+cd ../src
+jar -cvf ../target/bundle/$artifact-$1-sources.jar *
+cd ../../px100data-javadoc
+jar -cvf ../$project/target/bundle/$artifact-$1-javadoc.jar *
+cd ../$project/target/bundle
+gpg -ab $artifact-$1.jar
+gpg -ab $artifact-$1.pom
+gpg -ab $artifact-$1-sources.jar
+gpg -ab $artifact-$1-javadoc.jar
+jar -cvf bundle.jar *
+
+project="MongoStorage"
+artifact="mongo-storage"
+cd ../../../$project/target
+rm -r bundle
+mkdir bundle
+cp $artifact-$1.jar bundle
+cp ../pom.xml bundle/$artifact-$1.pom
+cd ../src
+jar -cvf ../target/bundle/$artifact-$1-sources.jar *
+cd ../../px100data-javadoc
+jar -cvf ../$project/target/bundle/$artifact-$1-javadoc.jar *
+cd ../$project/target/bundle
+gpg -ab $artifact-$1.jar
+gpg -ab $artifact-$1.pom
+gpg -ab $artifact-$1-sources.jar
+gpg -ab $artifact-$1-javadoc.jar
+jar -cvf bundle.jar *
+
+project="InMemoryJdbcPersistence"
+artifact="in-memory-jdbc-persistence"
+cd ../../../$project/target
+rm -r bundle
+mkdir bundle
+cp $artifact-$1.jar bundle
+cp ../pom.xml bundle/$artifact-$1.pom
+cd ../src
+jar -cvf ../target/bundle/$artifact-$1-sources.jar *
+cd ../../px100data-javadoc
+jar -cvf ../$project/target/bundle/$artifact-$1-javadoc.jar *
+cd ../$project/target/bundle
+gpg -ab $artifact-$1.jar
+gpg -ab $artifact-$1.pom
+gpg -ab $artifact-$1-sources.jar
+gpg -ab $artifact-$1-javadoc.jar
+jar -cvf bundle.jar *
+
+project="InMemoryIgniteStorage"
+artifact="ignite-storage"
+cd ../../../$project/target
+rm -r bundle
+mkdir bundle
+cp $artifact-$1.jar bundle
+cp ../pom.xml bundle/$artifact-$1.pom
+cd ../src
+jar -cvf ../target/bundle/$artifact-$1-sources.jar *
+cd ../../px100data-javadoc
+jar -cvf ../$project/target/bundle/$artifact-$1-javadoc.jar *
+cd ../$project/target/bundle
+gpg -ab $artifact-$1.jar
+gpg -ab $artifact-$1.pom
+gpg -ab $artifact-$1-sources.jar
+gpg -ab $artifact-$1-javadoc.jar
+jar -cvf bundle.jar *
+
+project="InMemoryHazelcastStorage"
+artifact="hazelcast-storage"
+cd ../../../$project/target
+rm -r bundle
+mkdir bundle
+cp $artifact-$1.jar bundle
+cp ../pom.xml bundle/$artifact-$1.pom
+cd ../src
+jar -cvf ../target/bundle/$artifact-$1-sources.jar *
+cd ../../px100data-javadoc
+jar -cvf ../$project/target/bundle/$artifact-$1-javadoc.jar *
+cd ../$project/target/bundle
+gpg -ab $artifact-$1.jar
+gpg -ab $artifact-$1.pom
+gpg -ab $artifact-$1-sources.jar
+gpg -ab $artifact-$1-javadoc.jar
+jar -cvf bundle.jar *
