@@ -477,7 +477,15 @@ getters it shouldn't. Annotating a normal getter of a serialized field will resu
 @QueryField - this is Ignite-specific annotation for getters of normal serialized fields, that are not indexed (rare). 
 @Index automatically makes some field a "query field". 
   
-Strive for maximum index coverage, as NoSQL is nothing, but indexed BLOBs. But also understand the cost of indexing: slower writes.  
+Strive for maximum index coverage, as NoSQL is nothing, but indexed BLOBs. But also understand the cost of indexing: slower writes. 
+
+@Calculated(springELExpression) - a field-level annotation to specify a Spring EL (essentially Groovy) expression to calculate a field.
+Not applicable for collections, however fine for sub-objects. It is evaluated by Transaction.commit() right before the entity is inserted 
+or updated in the database. Calculation is recursively propagated to all collection members and sub-objects (after the latter are calculated 
+themselves if specified). Otherwise there is no particular order, so don't use other calculated fields in those expressions. The expression 
+is resolved around the bean. E.g @Calculated("a + someMethod(b)") is evaluated as "this.getA() + this.someMethod(this.getB())". All expressions 
+are parsed/compiled at startup - only once. Calculated fields are a workaround for custom calculating getters (see @SerializedGetter) since 
+Ignite (at the moment) doesn't cache those getters' results and calls them many times during serialization. 
 
 ## Multi-Tenancy
 Px100 Platform was created with a single goal: to automate multi-tenant SaaS application development. Multi-tenancy is built into Px100 data,
