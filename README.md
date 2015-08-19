@@ -106,7 +106,7 @@ Px100 Data artifacts are in Maven Central. Use them like Spring, Apache, and oth
     <dependency>
         <groupId>com.px100systems</groupId>
         <artifactId>px100-persistence</artifactId>
-        <version>0.3.1</version>
+        <version>0.3.2</version>
     </dependency>
 ```
 
@@ -117,12 +117,12 @@ Then add one of the following:
     <dependency>
         <groupId>com.px100systems</groupId>
         <artifactId>ignite-storage</artifactId>
-        <version>0.3.1</version>
+        <version>0.3.2</version>
     </dependency>
     <dependency>
         <groupId>com.px100systems</groupId>
         <artifactId>in-memory-jdbc-persistence</artifactId>
-        <version>0.3.1</version>
+        <version>0.3.2</version>
     </dependency>
 ```
 
@@ -131,12 +131,12 @@ Then add one of the following:
     <dependency>
         <groupId>com.px100systems</groupId>
         <artifactId>hazelcast-storage</artifactId>
-        <version>0.3.1</version>
+        <version>0.3.2</version>
     </dependency>
     <dependency>
         <groupId>com.px100systems</groupId>
         <artifactId>in-memory-jdbc-persistence</artifactId>
-        <version>0.3.1</version>
+        <version>0.3.2</version>
     </dependency>
 ```
 
@@ -145,7 +145,7 @@ Then add one of the following:
     <dependency>
         <groupId>com.px100systems</groupId>
         <artifactId>mongo-storage</artifactId>
-        <version>0.3.1</version>
+        <version>0.3.2</version>
     </dependency>
 ```
 
