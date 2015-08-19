@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.px100systems</groupId>
 	<artifactId>in-memory-jdbc-persistence</artifactId>
-	<version>0.3.1</version>
+	<version>0.3.2</version>
 	<name>JDBC Persistence Provider</name>
 
     <description>JDBC Persistence Provider for Px100 Data In-Memory Storage Providers</description>
@@ -54,12 +54,12 @@
 		<dependency>
 			<groupId>com.px100systems</groupId>
   			<artifactId>px100-utils</artifactId>
-			<version>0.3.0</version>
+			<version>0.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.px100systems</groupId>
   			<artifactId>px100-persistence-api</artifactId>
-			<version>0.3.1</version>
+			<version>0.3.2</version>
 		</dependency>
 	
 		<dependency>

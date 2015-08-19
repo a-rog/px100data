@@ -66,11 +66,8 @@ public class HazelcastTest {
 
 		IMap<Long, TestEntity> map = hz.getMap(ENTITY_NAME);
 		map.addIndex("id", true);
-		map.addIndex("idSort", true);
 		map.addIndex("createdAt", true);
-		map.addIndex("createdAtSort", true);
 		map.addIndex("modifiedAt", true);
-		map.addIndex("modifiedAtSort", true);
 		map.addIndex("textField", true);
 
 		Runtime runtime = Runtime.getRuntime();
@@ -117,8 +114,8 @@ public class HazelcastTest {
 		map = hz.getMap(ENTITY_NAME);
 		PagingPredicate predicate = new PagingPredicate(
 			new Predicates.AndPredicate(new Predicates.LikePredicate("textField", "%Jane%"),
-				new Predicates.GreaterLessPredicate("idSort", first.getIdSort(), false, false)),
-			(o1, o2) -> ((TestEntity)o1.getValue()).getIdSort().compareTo(((TestEntity)o2.getValue()).getIdSort()),
+				new Predicates.GreaterLessPredicate("id", first.getId(), false, false)),
+			(o1, o2) -> ((TestEntity)o1.getValue()).getId().compareTo(((TestEntity)o2.getValue()).getId()),
 			100);
 		predicate.setIterationType(IterationType.VALUE);
 		int count = 0;
@@ -131,8 +128,8 @@ public class HazelcastTest {
 		map = hz.getMap(ENTITY_NAME);
 		predicate = new PagingPredicate(
 			new Predicates.AndPredicate(new Predicates.LikePredicate("textField", "%Jane%"),
-				new Predicates.GreaterLessPredicate("idSort", last.getIdSort(), true, true)),
-			(o1, o2) -> -1 * ((TestEntity)o1.getValue()).getIdSort().compareTo(((TestEntity)o2.getValue()).getIdSort()),
+				new Predicates.GreaterLessPredicate("id", last.getId(), true, true)),
+			(o1, o2) -> -1 * ((TestEntity)o1.getValue()).getId().compareTo(((TestEntity)o2.getValue()).getId()),
 			100);
 		predicate.setIterationType(IterationType.VALUE);
 		count = 0;
@@ -145,8 +142,8 @@ public class HazelcastTest {
 		map = hz.getMap(ENTITY_NAME);
 		predicate = new PagingPredicate(
 			new Predicates.AndPredicate(new Predicates.LikePredicate("textField", "%Richards%"),
-				new Predicates.GreaterLessPredicate("idSort", first.getIdSort(), false, false)),
-			(o1, o2) -> ((TestEntity)o1.getValue()).getIdSort().compareTo(((TestEntity)o2.getValue()).getIdSort()),
+				new Predicates.GreaterLessPredicate("id", first.getId(), false, false)),
+			(o1, o2) -> ((TestEntity)o1.getValue()).getId().compareTo(((TestEntity)o2.getValue()).getId()),
 			100);
 		predicate.setIterationType(IterationType.VALUE);
 		count = 0;
@@ -159,8 +156,8 @@ public class HazelcastTest {
 		map = hz.getMap(ENTITY_NAME);
 		predicate = new PagingPredicate(
 			new Predicates.AndPredicate(new Predicates.LikePredicate("textField", "%Richards%"),
-				new Predicates.GreaterLessPredicate("idSort", last.getIdSort(), true, true)),
-			(o1, o2) -> -1 * ((TestEntity)o1.getValue()).getIdSort().compareTo(((TestEntity)o2.getValue()).getIdSort()),
+				new Predicates.GreaterLessPredicate("id", last.getId(), true, true)),
+			(o1, o2) -> -1 * ((TestEntity)o1.getValue()).getId().compareTo(((TestEntity)o2.getValue()).getId()),
 			100);
 		predicate.setIterationType(IterationType.VALUE);
 		count = 0;

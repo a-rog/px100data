@@ -60,32 +60,32 @@ public class Px100DataTest {
 			start = end;
 
 			int count = 0;
-			for (TestPx100Entity ignored : tx.find(TestPx100Entity.class, and(containsText("textField", "Jane"), gt("idSort", first.getIdSort())),
-				Collections.singletonList("idSort"), 100))
+			for (TestPx100Entity ignored : tx.find(TestPx100Entity.class, and(containsText("textField", "Jane"), gt("id", first.getId())),
+				Collections.singletonList("id"), 100))
 				count++;
 			end = new Date().getTime();
 			System.out.println("Query 1 count: " + count + ", time: "+ (end - start) + " ms, heap size: " + (runtime.totalMemory() - runtime.freeMemory()) + " bytes");
 			start = end;
 
 			count = 0;
-			for (TestPx100Entity ignored : tx.find(TestPx100Entity.class, and(containsText("textField", "Jane"), le("idSort", last.getIdSort())),
-				Collections.singletonList("idSort DESC"), 100))
+			for (TestPx100Entity ignored : tx.find(TestPx100Entity.class, and(containsText("textField", "Jane"), le("id", last.getId())),
+				Collections.singletonList("id DESC"), 100))
 				count++;
 			end = new Date().getTime();
 			System.out.println("Query 2 count: " + count + ", time: "+ (end - start) + " ms, heap size: " + (runtime.totalMemory() - runtime.freeMemory()) + " bytes");
 			start = end;
 
 			count = 0;
-			for (TestPx100Entity ignored : tx.find(TestPx100Entity.class, and(containsText("textField", "Richards"), gt("idSort", first.getIdSort())),
-				Collections.singletonList("idSort"), 100))
+			for (TestPx100Entity ignored : tx.find(TestPx100Entity.class, and(containsText("textField", "Richards"), gt("id", first.getId())),
+				Collections.singletonList("id"), 100))
 				count++;
 			end = new Date().getTime();
 			System.out.println("Query 3 count: " + count + ", time: "+ (end - start) + " ms, heap size: " + (runtime.totalMemory() - runtime.freeMemory()) + " bytes");
 			start = end;
 
 			count = 0;
-			for (TestPx100Entity ignored : tx.find(TestPx100Entity.class, and(containsText("textField", "Richards"), le("idSort", last.getIdSort())),
-				Collections.singletonList("idSort DESC"), 100))
+			for (TestPx100Entity ignored : tx.find(TestPx100Entity.class, and(containsText("textField", "Richards"), le("id", last.getId())),
+				Collections.singletonList("id DESC"), 100))
 				count++;
 			end = new Date().getTime();
 			System.out.println("Query 4 count: " + count + ", time: "+ (end - start) + " ms, heap size: " + (runtime.totalMemory() - runtime.freeMemory()) + " bytes");

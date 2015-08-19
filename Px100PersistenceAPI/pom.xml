@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.px100systems</groupId>
 	<artifactId>px100-persistence-api</artifactId>
-	<version>0.3.1</version>
+	<version>0.3.2</version>
 	<name>In-Memory Persistence Provider Support</name>
   
     <description>Px100 Data API</description>
@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>com.px100systems</groupId>
   			<artifactId>px100-utils</artifactId>
-			<version>0.3.0</version>
+			<version>0.3.2</version>
 		</dependency>
 	
 		<dependency>

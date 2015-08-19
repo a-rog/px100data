@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.px100systems</groupId>
     <artifactId>px100-utils</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.2</version>
     <name>Px100 Utils</name>
  
     <description>Common Px100 Utils</description>

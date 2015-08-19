@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.px100systems</groupId>
     <artifactId>ignite-storage</artifactId>
-    <version>0.3.1</version>
+    <version>0.3.2</version>
     <name>Ignite In-Memory Storage Provider</name>
 
     <description>Ignite In-Memory Storage Provider for Px100 Data</description>
@@ -64,12 +64,12 @@
         <dependency>
             <groupId>com.px100systems</groupId>
             <artifactId>px100-utils</artifactId>
-            <version>0.3.0</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
             <artifactId>px100-persistence-api</artifactId>
-            <version>0.3.1</version>
+            <version>0.3.2</version>
         </dependency>
 
         <dependency>

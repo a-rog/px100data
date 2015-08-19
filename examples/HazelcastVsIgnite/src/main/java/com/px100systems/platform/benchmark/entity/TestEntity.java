@@ -59,9 +59,6 @@ public class TestEntity implements Portable, Externalizable {
 	public void writePortable(PortableWriter portableWriter) throws IOException {
 		portableWriter.writeLong("id", id);
 		portableWriter.writeInt("tenantId", tenantId);
-		portableWriter.writeUTF("idSort", getIdSort());
-		portableWriter.writeUTF("createdAtSort", getCreatedAtSort());
-		portableWriter.writeUTF("modifiedAtSort", getModifiedAtSort());
 		portableWriter.writeLong("createdAt", createdAt.getTime());
 		portableWriter.writeLong("modifiedAt", modifiedAt.getTime());
 		portableWriter.writeUTF("textField", textField);
@@ -93,9 +90,6 @@ public class TestEntity implements Portable, Externalizable {
 	public void writeExternal(ObjectOutput out) throws IOException {
 		out.writeLong(id);
 		out.writeInt(tenantId);
-		out.writeUTF(getIdSort());
-		out.writeUTF(getCreatedAtSort());
-		out.writeUTF(getModifiedAtSort());
 		out.writeLong(createdAt.getTime());
 		out.writeLong(modifiedAt.getTime());
 		out.writeUTF(textField);
@@ -113,9 +107,6 @@ public class TestEntity implements Portable, Externalizable {
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 		id = in.readLong();
 		tenantId = in.readInt();
-		in.readUTF();
-		in.readUTF();
-		in.readUTF();
 		createdAt = new Date(in.readLong());
 		modifiedAt = new Date(in.readLong());
 		textField = in.readUTF();
@@ -127,30 +118,6 @@ public class TestEntity implements Portable, Externalizable {
 		byte[] fillerData = new byte[in.readInt()];
 		in.readFully(fillerData);
 		deserializeFiller(fillerData);
-	}
-
-	private String sortValue(Long number) {
-		String s;
-		if (number == null)
-			s = "########################################";
-		else if (number >= 0)
-			s = "0" + number;
-		else
-			s = String.format("-%1$024d", Long.MAX_VALUE + number);
-
-		return String.format("%1$24.24s:%2$024d", s, id).replace(" ", "0");
-	}
-
-	public String getIdSort() {
-		return sortValue(id);
-	}
-
-	public String getCreatedAtSort() {
-		return sortValue(createdAt.getTime());
-	}
-
-	public String getModifiedAtSort() {
-		return sortValue(modifiedAt.getTime());
 	}
 
 	private byte[] serializeFiller() {

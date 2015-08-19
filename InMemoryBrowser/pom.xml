@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.px100systems</groupId>
     <artifactId>db-browser</artifactId>
-    <version>0.3.1</version>
+    <version>0.3.2</version>
     <packaging>war</packaging>
     <name>Px100 Data DB Browser</name>
 
@@ -148,32 +148,32 @@
         <dependency>
             <groupId>com.px100systems</groupId>
             <artifactId>px100-utils</artifactId>
-            <version>0.3.0</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
             <artifactId>px100-persistence</artifactId>
-            <version>0.3.1</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
             <artifactId>px100-persistence-api</artifactId>
-            <version>0.3.1</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
             <artifactId>in-memory-jdbc-persistence</artifactId>
-            <version>0.3.1</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
             <artifactId>hazelcast-storage</artifactId>
-            <version>0.3.1</version>
+            <version>0.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
             <artifactId>ignite-storage</artifactId>
-            <version>0.3.1</version>
+            <version>0.3.2</version>
         </dependency>
     </dependencies>
 </project>

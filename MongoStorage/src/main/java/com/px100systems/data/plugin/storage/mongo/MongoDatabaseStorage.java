@@ -16,8 +16,10 @@
  */
 package com.px100systems.data.plugin.storage.mongo;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCommandException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -95,6 +97,14 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 		return "px100_" + fieldName + "_idx";
 	}
 
+	private Document serialize(Object bean) {
+		SerializationDefinition def = SerializationDefinition.get(bean.getClass());
+		if (def == null)
+			throw new RuntimeException("Cannot find SerializationDefinition for " + bean.getClass().getSimpleName());
+
+		return new Document(def.write(() -> new BasicDBObject(), () -> new ArrayList<Object>(), bean));
+	}
+
 	public Map<String, List<String>> getSchema(boolean reset) {
 		MongoDatabase db = mongoClient.getDatabase(databaseName);
 
@@ -160,7 +170,9 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 			return;
 
 		MongoDatabase db = mongoClient.getDatabase(databaseName);
-		db.getCollection(unitName).drop();
+		try {
+			db.getCollection(unitName).drop();
+		} catch (MongoCommandException ignored) {}
 	}
 
 	public void updateEntity(String unitName, SerializationDefinition def) {
@@ -189,7 +201,9 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 			return;
 
 		MongoDatabase db = mongoClient.getDatabase(databaseName);
-		db.getCollection(unitName).dropIndex(indexName(obsoleteIndex));
+		try {
+			db.getCollection(unitName).dropIndex(indexName(obsoleteIndex));
+		} catch (MongoCommandException ignored) {}
 	}
 
 	public Long getMaxId(String unitName) {
@@ -213,7 +227,7 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 			throw new RuntimeException("Cannot find SerializedDefinition for " + cls.getSimpleName());
 
 		T result = (T)def.newInstance();
-		def.read(new DocumentReader(doc), result);
+		def.read(doc, result);
 		return result;
 	}
 
@@ -244,7 +258,7 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 		try {
 			while (cursor.hasNext()) {
 				T item = (T)def.newInstance();
-				def.read(new DocumentReader(cursor.next()), item);
+				def.read(cursor.next(), item);
 				result.add(item);
 			}
 		} finally {
@@ -313,7 +327,7 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 				@SuppressWarnings("unchecked")
 				public T next() {
 					T item = (T)def.newInstance();
-					def.read(new DocumentReader(cursor.next()), item);
+					def.read(cursor.next(), item);
 					return item;
 				}
 			};
@@ -383,13 +397,6 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 		Map<String, List<WriteModel<Document>>> batches = new HashMap<>();
 
 		for (StoredBean bean : inserts) {
-			SerializationDefinition def = SerializationDefinition.get(bean.getClass());
-			if (def == null)
-				throw new RuntimeException("Cannot find SerializationDefinition for " + bean.getClass().getSimpleName());
-
-			DocumentWriter doc = new DocumentWriter();
-			def.write(doc, bean);
-
 			String unitName = bean.unitName();
 			List<WriteModel<Document>> batch = batches.get(unitName);
 			if (batch == null) {
@@ -397,17 +404,10 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 				batches.put(unitName, batch);
 			}
 
-			batch.add(new InsertOneModel<Document>(doc.getDocument()));
+			batch.add(new InsertOneModel<Document>(serialize(bean)));
 		}
 
 		for (StoredBean bean : updates) {
-			SerializationDefinition def = SerializationDefinition.get(bean.getClass());
-			if (def == null)
-				throw new RuntimeException("Cannot find SerializationDefinition for " + bean.getClass().getSimpleName());
-
-			DocumentWriter doc = new DocumentWriter();
-			def.write(doc, bean);
-
 			String unitName = bean.unitName();
 			List<WriteModel<Document>> batch = batches.get(unitName);
 			if (batch == null) {
@@ -415,7 +415,7 @@ public class MongoDatabaseStorage implements TraditionalStorageProvider, Initial
 				batches.put(unitName, batch);
 			}
 
-			batch.add(new ReplaceOneModel<Document>(Filters.eq("id", bean.getId()), doc.getDocument()));
+			batch.add(new ReplaceOneModel<Document>(Filters.eq("id", bean.getId()), serialize(bean)));
 		}
 
 		for (Delete delete : deletes) {

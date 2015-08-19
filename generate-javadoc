@@ -1,0 +1,12 @@
+#!/bin/bash
+rm -r px100data-javadoc
+mkdir px100data-javadoc
+javadoc -author -d px100data-javadoc -sourcepath \
+Px100Util/src/main/java:\
+Px100PersistenceAPI/src/main/java:\
+Px100Persistence/src/main/java:\
+InMemoryJdbcPersistence/src/main/java:\
+MongoStorage/src/main/java:\
+InMemoryIgniteStorage/src/main/java:\
+InMemoryHazelcastStorage/src/main/java\
+ -subpackages com.px100systems

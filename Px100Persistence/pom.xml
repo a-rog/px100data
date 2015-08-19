@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.px100systems</groupId>
 	<artifactId>px100-persistence</artifactId>
-	<version>0.3.1</version>
+	<version>0.3.2</version>
 	<name>In-Memory and Database Persistence</name>
 
     <description>Px100 Data Core Classes</description>
@@ -55,12 +55,12 @@
 		<dependency>
 			<groupId>com.px100systems</groupId>
   			<artifactId>px100-utils</artifactId>
-			<version>0.3.0</version>
+			<version>0.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.px100systems</groupId>
   			<artifactId>px100-persistence-api</artifactId>
-			<version>0.3.1</version>
+			<version>0.3.2</version>
 		</dependency>
 	
 		<dependency>

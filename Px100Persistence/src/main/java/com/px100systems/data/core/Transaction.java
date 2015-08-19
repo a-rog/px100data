@@ -279,21 +279,24 @@ public class Transaction {
 		}
 		
 		Date now = new Date();
-		
+
 		List<StoredBean> allInserts = new ArrayList<StoredBean>();
 		for (Entity e : inserts) {
 			e.setCreatedAt(now);
 			e.setModifiedAt(now);
+			SerializationDefinition.get(e.getClass()).calculate(e);
 			allInserts.add(e);
 		}
 
 		List<StoredBean> allUpdates = new ArrayList<StoredBean>();
 		for (Entity e : optimisticUpdates) {
 			e.setModifiedAt(now);
+			SerializationDefinition.get(e.getClass()).calculate(e);
 			allUpdates.add(e);
 		}
 		for (Entity e : updates) {
 			e.setModifiedAt(now);
+			SerializationDefinition.get(e.getClass()).calculate(e);
 			allUpdates.add(e);
 		}
 

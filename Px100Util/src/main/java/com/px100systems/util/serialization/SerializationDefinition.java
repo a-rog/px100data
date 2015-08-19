@@ -17,6 +17,9 @@
 package com.px100systems.util.serialization;
 
 import com.px100systems.util.PropertyAccessor;
+import com.px100systems.util.SpringELCtx;
+import org.springframework.expression.Expression;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.ReflectionUtils;
 
 import java.io.IOException;
@@ -56,9 +59,11 @@ public class SerializationDefinition {
 	private static class FieldDefinition {
 		private String name;
 		private Class<?> type;
+		private boolean primitive = false;
 		private Class<?> collectionType = null;
 		private Method accessor;
 		private Method mutator = null;
+		private Expression calculator = null;
 
 		public FieldDefinition() {
 		}
@@ -156,6 +161,22 @@ public class SerializationDefinition {
 	}
 
 	/**
+	 * Set bean field. Throws an exception if the field is not found.
+	 * @param bean the bean
+	 * @param field field name
+	 * @param value field value
+	 */
+	@SuppressWarnings("unused")
+	public void setField(Object bean, String field, Object value) {
+		for (FieldDefinition fd : fields)
+			if (fd.name.equals(field)) {
+				invokeMethod(fd.mutator, bean, value);
+				return;
+			}
+		throw new RuntimeException("Field " + field + " not found in " + constructor.getDeclaringClass().getSimpleName());
+	}
+
+	/**
 	 * Get field type leveraging already parsed reflection data. Throws an exception if the field is not found.
 	 * @param name field name
 	 * @return the field type
@@ -219,6 +240,8 @@ public class SerializationDefinition {
 				if (fd.type.isPrimitive())
 					throw new RuntimeException("Primitives are not supported: " + fd.type.getSimpleName());
 
+				Calculated calc = field.getAnnotation(Calculated.class);
+
 				if (!fd.type.equals(Integer.class) &&
 					!fd.type.equals(Long.class) &&
 					!fd.type.equals(Double.class) &&
@@ -230,13 +253,17 @@ public class SerializationDefinition {
 						if (sc == null)
 							throw new RuntimeException(cls.getSimpleName() + "." + fd.name + " is missing @SerializedCollection");
 
+						if (calc != null)
+							throw new RuntimeException(cls.getSimpleName() + "." + fd.name + " cannot have a calculator because it is a collection");
+
 						fd.collectionType = sc.type();
-						if (!fd.collectionType.equals(Integer.class) &&
-							!fd.collectionType.equals(Long.class) &&
-							!fd.collectionType.equals(Double.class) &&
-							!fd.collectionType.equals(Boolean.class) &&
-							!fd.collectionType.equals(Date.class) &&
-							!fd.collectionType.equals(String.class)) {
+						fd.primitive = fd.collectionType.equals(Integer.class) ||
+							fd.collectionType.equals(Long.class) ||
+							fd.collectionType.equals(Double.class) ||
+							fd.collectionType.equals(Boolean.class) ||
+							fd.collectionType.equals(Date.class) ||
+							fd.collectionType.equals(String.class);
+						if (!fd.primitive) {
 							if (cls.getName().startsWith("java"))
 								throw new RuntimeException(cls.getSimpleName() + "." + fd.name +
 									": system collection types are not supported: " + fd.collectionType.getSimpleName());
@@ -251,6 +278,8 @@ public class SerializationDefinition {
 						if (!definitions.containsKey(fd.type))
 							new SerializationDefinition(fd.type);
 					}
+				else
+					fd.primitive = true;
 
 				try {
 					fd.accessor = c.getMethod(PropertyAccessor.methodName("get", fd.name));
@@ -264,6 +293,9 @@ public class SerializationDefinition {
 					throw new RuntimeException(cls.getSimpleName() + "." + fd.name + " is missing setter");
 				}
 
+				if (calc != null)
+					fd.calculator = new SpelExpressionParser().parseExpression(calc.value());
+
 				fields.add(fd);
 			}
 
@@ -273,15 +305,16 @@ public class SerializationDefinition {
 					FieldDefinition fd = new FieldDefinition();
 					fd.name = method.getName().substring(3);
 					fd.name = fd.name.substring(0, 1).toLowerCase() + fd.name.substring(1);
-
 					fd.type = method.getReturnType();
-					if (fd.type == null || fd.type.isPrimitive() ||
-						(!fd.type.equals(Integer.class) &&
-						!fd.type.equals(Long.class) &&
-						!fd.type.equals(Double.class) &&
-						!fd.type.equals(Boolean.class) &&
-						!fd.type.equals(Date.class) &&
-						!fd.type.equals(String.class)))
+					fd.primitive = fd.type != null &&
+						(fd.type.equals(Integer.class) ||
+						fd.type.equals(Long.class) ||
+						fd.type.equals(Double.class) ||
+						fd.type.equals(Boolean.class) ||
+						fd.type.equals(Date.class) ||
+						fd.type.equals(String.class));
+
+					if (!fd.primitive)
 						throw new RuntimeException("Not compact-serializable getter type: " + (fd.type == null ? "void" : fd.type.getSimpleName()));
 
 					fd.accessor = method;
@@ -353,7 +386,7 @@ public class SerializationDefinition {
 
 		for (FieldDefinition fd : fields) {
 			Object value = invokeMethod(fd.accessor, bean);
-			if (fd.type.equals(List.class) || fd.type.equals(Set.class)) {
+			if (fd.collectionType != null) {
 				if (value == null)
 					stream.writeInteger(null);
 				else {
@@ -420,7 +453,7 @@ public class SerializationDefinition {
 				writer.writeDate(fd.name, (Date)value);
 			else if (fd.type.equals(String.class))
 				writer.writeString(fd.name, (String) value);
-			else if (fd.type.equals(List.class) || fd.type.equals(Set.class)) {
+			else if (fd.collectionType != null) {
 				if (value == null)
 					writer.writeBytes(fd.name, null);
 				else {
@@ -457,8 +490,108 @@ public class SerializationDefinition {
 			else if (fd.type.equals(Date.class))
 				writer.writeDate(fd.name, (Date)value);
 			else if (fd.type.equals(String.class))
-				writer.writeString(fd.name, (String) value);
+				writer.writeString(fd.name, (String)value);
 		}
+	}
+
+	public interface MapFactory {
+		Map<String, Object> create();
+	}
+
+	public interface CollectionFactory {
+		Collection<Object> create();
+	}
+
+	/**
+	 * Serialize bean into a map (used by Mongo and similar hierarchical databases)
+	 * @param mapFactory map factory
+	 * @param collectionFactory collection factory
+	 * @param bean bean to serialize
+	 * @return the map
+	 */
+	public Map<String, Object> write(MapFactory mapFactory, CollectionFactory collectionFactory, Object bean) {
+		if (!locked)
+			throw new RuntimeException("Lock the definitions after creating all of them at startup");
+
+		Map<String, Object> result = mapFactory.create();
+
+		for (FieldDefinition fd : fields) {
+			Object value = invokeMethod(fd.accessor, bean);
+			if (value == null)
+				continue;
+
+			if (fd.collectionType != null) {
+				Collection<Object> dest = collectionFactory.create();
+				Collection<?> src = (Collection<?>)value;
+				if (fd.primitive)
+					for (Object o : src)
+						dest.add(o);
+				else {
+					SerializationDefinition def = get(fd.collectionType);
+					for (Object o : src)
+						dest.add(def.write(mapFactory, collectionFactory, o));
+				}
+				result.put(fd.name, dest);
+			} else if (fd.primitive)
+				result.put(fd.name, value);
+			else
+				result.put(fd.name, get(fd.type).write(mapFactory, collectionFactory, value));
+		}
+
+		for (FieldDefinition fd : gettersOnly) {
+			Object value = invokeMethod(fd.accessor, bean);
+			if (value != null)
+				result.put(fd.name, value);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Deserialize bean from a map (used by Mongo and similar hierarchical databases)
+	 * @param map map
+	 * @param bean bean to populate
+	 */
+	@SuppressWarnings("unchecked")
+	public void read(Map<String, Object> map, Object bean) {
+		if (!locked)
+			throw new RuntimeException("Lock the definitions after creating all of them at startup");
+
+		if (serializingSetter != null)
+			invokeMethod(serializingSetter, bean, true);
+
+		for (FieldDefinition fd : fields) {
+			Object value = map.get(fd.name);
+			if (value == null)
+				continue;
+
+			if (fd.collectionType != null) {
+				Collection<Object> collection = fd.type.equals(List.class) ? new ArrayList<Object>() : new HashSet<Object>();
+				if (fd.primitive)
+					for (Object o : (Collection<?>)value)
+						collection.add(o);
+				else {
+					SerializationDefinition def = get(fd.collectionType);
+					for (Object o : (Collection<?>) value) {
+						Object m = def.newInstance();
+						def.read((Map<String, Object>)o, m);
+						collection.add(m);
+					}
+				}
+
+				value = collection;
+			} else if (!fd.primitive) {
+				SerializationDefinition def = get(fd.type);
+				Object m = def.newInstance();
+				def.read((Map<String, Object>)value, m);
+				value = m;
+			}
+
+			invokeMethod(fd.mutator, bean, value);
+		}
+
+		if (serializingSetter != null)
+			invokeMethod(serializingSetter, bean, false);
 	}
 
 	/**
@@ -474,7 +607,7 @@ public class SerializationDefinition {
 			invokeMethod(serializingSetter, bean, true);
 
 		for (FieldDefinition fd : fields)
-			if (fd.type.equals(List.class) || fd.type.equals(Set.class)) {
+			if (fd.collectionType != null) {
 				DataStream newStream =  stream.readBytes();
 				Collection<Object> collection = null;
 				if (newStream != null) {
@@ -545,7 +678,7 @@ public class SerializationDefinition {
 				invokeMethod(fd.mutator, bean, reader.readDate(fd.name));
 			else if (fd.type.equals(String.class))
 				invokeMethod(fd.mutator, bean, reader.readString(fd.name));
-			else if (fd.type.equals(List.class) || fd.type.equals(Set.class)) {
+			else if (fd.collectionType != null) {
 				byte[] data = reader.readBytes(fd.name);
 				Collection<Object> collection = null;
 				if (data != null) {
@@ -590,6 +723,9 @@ public class SerializationDefinition {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T clone(T bean) {
+		if (!locked)
+			throw new RuntimeException("Lock the definitions after creating all of them at startup");
+
 		DataStream ds = new DataStream();
 		try {
 			write(ds, bean);
@@ -607,5 +743,26 @@ public class SerializationDefinition {
 		}
 
 		return result;
+	}
+
+	public void calculate(Object bean) {
+		if (!locked)
+			throw new RuntimeException("Lock the definitions after creating all of them at startup");
+
+		for (FieldDefinition fd : fields) {
+			if (fd.calculator != null)
+				invokeMethod(fd.mutator, bean, fd.calculator.getValue(new SpringELCtx(bean)));
+
+			if (fd.collectionType != null && !fd.primitive) {
+				Collection<?> collection = (Collection)invokeMethod(fd.accessor, bean);
+				if (collection != null)
+					for (Object member : collection)
+						SerializationDefinition.get(fd.collectionType).calculate(member);
+			} else if (!fd.primitive) {
+				Object subObject = invokeMethod(fd.accessor, bean);
+				if (subObject != null)
+					SerializationDefinition.get(fd.type).calculate(subObject);
+			}
+		}
 	}
 }

@@ -23,6 +23,9 @@ import javax.cache.Cache;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
+import org.apache.ignite.lang.IgniteBiTuple;
+import java.util.LinkedHashMap;
+
 
 public class IgniteTest {
 	private static final String ENTITY_NAME = "TestEntity";
@@ -84,23 +87,28 @@ public class IgniteTest {
 		type.getQueryFields().put("id", Long.class);
 		type.getAscendingFields().put("id", Long.class);
 
-		type.getQueryFields().put("idSort", String.class);
-		type.getAscendingFields().put("idSort", String.class);
-
 		type.getQueryFields().put("createdAt", Date.class);
 		type.getAscendingFields().put("createdAt", Date.class);
-
-		type.getQueryFields().put("createdAtSort", String.class);
-		type.getAscendingFields().put("createdAtSort", String.class);
 
 		type.getQueryFields().put("modifiedAt", Date.class);
 		type.getAscendingFields().put("modifiedAt", Date.class);
 
-		type.getQueryFields().put("modifiedAtSort", String.class);
-		type.getAscendingFields().put("modifiedAtSort", String.class);
-
 		type.getQueryFields().put("textField", String.class);
 		type.getAscendingFields().put("textField", String.class);
+
+		// LinkedHashMap<String, IgniteBiTuple<Class<?>,Boolean>> compoundIndex = new LinkedHashMap<>();
+		// compoundIndex.put("textField", new IgniteBiTuple<>(String.class, true));
+		// compoundIndex.put("id", new IgniteBiTuple<>(Long.class, false));
+		// type.getGroups().put("compIdx1", compoundIndex);
+
+		// compoundIndex = new LinkedHashMap<>();
+		// compoundIndex.put("id", new IgniteBiTuple<>(Long.class, false));
+		// type.getGroups().put("compIdx2", compoundIndex);
+
+		// compoundIndex = new LinkedHashMap<>();
+		// compoundIndex.put("textField", new IgniteBiTuple<>(String.class, false));
+		// compoundIndex.put("id", new IgniteBiTuple<>(Long.class, false));
+		// type.getGroups().put("compIdx3", compoundIndex);
 
 		cacheConfig.setTypeMetadata(Collections.singletonList(type));
 		ignite.createCache(cacheConfig);
@@ -148,7 +156,7 @@ public class IgniteTest {
 		cache = ignite.cache(ENTITY_NAME);
 		assert cache != null;
 		SqlQuery<Object, TestEntity> query = new SqlQuery<>(TestEntity.class,
-			"FROM TestEntity WHERE textField LIKE '%Jane%' AND idSort > '" + first.getIdSort() + "' ORDER BY idSort LIMIT 100");
+			"FROM TestEntity WHERE textField LIKE '%Jane%' AND id > '" + first.getId() + "' ORDER BY id LIMIT 100");
 		query.setPageSize(100);
 		QueryCursor<Cache.Entry<Object, TestEntity>> cursor = cache.query(query);
 		int count = 0;
@@ -167,7 +175,7 @@ public class IgniteTest {
 		cache = ignite.cache(ENTITY_NAME);
 		assert cache != null;
 		query = new SqlQuery<>(TestEntity.class,
-			"FROM TestEntity WHERE textField LIKE '%Jane%' AND idSort <= '" + last.getIdSort() + "' ORDER BY idSort DESC LIMIT 100");
+			"FROM TestEntity WHERE textField LIKE '%Jane%' AND id <= '" + last.getId() + "' ORDER BY id DESC LIMIT 100");
 		query.setPageSize(100);
 		cursor = cache.query(query);
 		count = 0;
@@ -186,7 +194,7 @@ public class IgniteTest {
 		cache = ignite.cache(ENTITY_NAME);
 		assert cache != null;
 		query = new SqlQuery<>(TestEntity.class,
-			"FROM TestEntity WHERE textField LIKE '%Richards%' AND idSort > '" + first.getIdSort() + "' ORDER BY idSort ASC LIMIT 100");
+			"FROM TestEntity WHERE textField LIKE '%Richards%' AND id > '" + first.getId() + "' ORDER BY id ASC LIMIT 100");
 		query.setPageSize(100);
 		cursor = cache.query(query);
 		count = 0;
@@ -205,7 +213,7 @@ public class IgniteTest {
 		cache = ignite.cache(ENTITY_NAME);
 		assert cache != null;
 		query = new SqlQuery<>(TestEntity.class,
-			"FROM TestEntity WHERE textField LIKE '%Richards%' AND idSort <= '" + last.getIdSort() + "' ORDER BY idSort DESC LIMIT 100");
+			"FROM TestEntity WHERE textField LIKE '%Richards%' AND id <= '" + last.getId() + "' ORDER BY id DESC LIMIT 100");
 		query.setPageSize(100);
 		cursor = cache.query(query);
 		count = 0;

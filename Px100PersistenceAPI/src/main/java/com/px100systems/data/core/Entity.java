@@ -58,6 +58,7 @@ import java.util.Map;
  * @version 0.3 <br>Copyright (c) 2015 Px100 Systems. All Rights Reserved.<br>
  * @author Alex Rogachevsky
  */
+@SuppressWarnings("unused")
 public abstract class Entity extends StoredBean {
 	public static final String TENANT_DELIMITER = "___";
 
@@ -169,7 +170,7 @@ public abstract class Entity extends StoredBean {
 	 * @param date date
 	 * @return sort value
 	 */
-	protected String sortValue(Date date) {
+	public String sortValue(Date date) {
 		return sortValue(date == null ? null : date.getTime());
 	}
 
@@ -178,14 +179,31 @@ public abstract class Entity extends StoredBean {
 	 * @param number number
 	 * @return sort value
 	 */
-	protected String sortValue(Long number) {
+	public String sortValue(Integer number) {
 		String s;
 		if (number == null)
 			s = "########################################";
 		else if (number >= 0)
 			s = "0" + number;
 		else
-			s = String.format("-%1$024d", Long.MAX_VALUE + number);
+			s = String.format("-%1$023d", Integer.MAX_VALUE + number);
+
+		return String.format("%1$24.24s:%2$024d", s, getId()).replace(" ", "0");
+	}
+
+	/**
+	 * Helper method for special sort getters
+	 * @param number number
+	 * @return sort value
+	 */
+	public String sortValue(Long number) {
+		String s;
+		if (number == null)
+			s = "########################################";
+		else if (number >= 0)
+			s = "0" + number;
+		else
+			s = String.format("-%1$023d", Long.MAX_VALUE + number);
 
 		return String.format("%1$24.24s:%2$024d", s, getId()).replace(" ", "0");
 	}
@@ -197,7 +215,7 @@ public abstract class Entity extends StoredBean {
 	 * @param number number
 	 * @return sort value
 	 */
-	protected String sortValue(Double number) {
+	public String sortValue(Double number) {
 		String s;
 		if (number == null)
 			s = "########################################";
@@ -214,7 +232,7 @@ public abstract class Entity extends StoredBean {
 	 * @param value value
 	 * @return sort value
 	 */
-	protected String sortValue(Boolean value) {
+	public String sortValue(Boolean value) {
 		return String.format("%1$s:%2$024d", value == null ? "#" : (value ? "1" : "0"), getId());
 	}
 
@@ -223,7 +241,7 @@ public abstract class Entity extends StoredBean {
 	 * @param s value
 	 * @return sort value
 	 */
-	protected String sortValue(String s) {
+	public String sortValue(String s) {
 		return String.format("%1$-32.32s:%2$024d", s == null ? "" : s, getId()).replace(" ", "0");
 	}
 
@@ -244,60 +262,12 @@ public abstract class Entity extends StoredBean {
 	}
 
 	/**
-	 * Special ID field sorter - required by teh higher-level Px100 framework displaying lists
-	 * @return the sort value
-	 */
-	@Index
-	@SerializedGetter
-	public String getIdSort() {
-		return sortValue(getId());
-	}
-
-	/**
-	 * idSort OrderBy (comparator) - used by Hazelcast
-	 * @return the Comparable implementation wrapper
-	 */
-	@SuppressWarnings("unused")
-	public static OrderBy orderByIdSort(int modifier) {
-		return new OrderBy<Entity>(modifier) {
-			@Override
-			public Comparable<?> get(Entity object) {
-				return object.getIdSort();
-			}
-		};
-	}
-
-	/**
 	 * Creation time. Set by Transaction when the bean is created.
 	 * @return craetion time
 	 */
 	@Index
 	public Date getCreatedAt() {
 		return createdAt;
-	}
-
-	/**
-	 * Special createdAt field sorter - required by teh higher-level Px100 framework displaying lists
-	 * @return the sort value
-	 */
-	@Index
-	@SerializedGetter
-	public String getCreatedAtSort() {
-		return sortValue(createdAt);
-	}
-
-	/**
-	 * createdAtSort OrderBy (comparator) - used by Hazelcast
-	 * @return the Comparable implementation wrapper
-	 */
-	@SuppressWarnings("unused")
-	public static OrderBy orderByCreatedAtSort(int modifier) {
-		return new OrderBy<Entity>(modifier) {
-			@Override
-			public Comparable<?> get(Entity object) {
-				return object.getCreatedAtSort();
-			}
-		};
 	}
 
 	/**
@@ -315,30 +285,6 @@ public abstract class Entity extends StoredBean {
 	@Index
 	public Date getModifiedAt() {
 		return modifiedAt;
-	}
-
-	/**
-	 * Special modifiedAt field sorter - required by teh higher-level Px100 framework displaying lists
-	 * @return the sort value
-	 */
-	@Index
-	@SerializedGetter
-	public String getModifiedAtSort() {
-		return sortValue(modifiedAt);
-	}
-
-	/**
-	 * modifiedAtSort OrderBy (comparator) - used by Hazelcast
-	 * @return the Comparable implementation wrapper
-	 */
-	@SuppressWarnings("unused")
-	public static OrderBy orderByModifiedAtSort(int modifier) {
-		return new OrderBy<Entity>(modifier) {
-			@Override
-			public Comparable<?> get(Entity object) {
-				return object.getModifiedAtSort();
-			}
-		};
 	}
 
 	/**
