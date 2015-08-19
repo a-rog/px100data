@@ -16,7 +16,13 @@
  */
 package com.px100systems.data.core;
 
+import com.px100systems.util.serialization.SerializationDefinition;
 import com.px100systems.util.serialization.SerializedGetter;
+
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -59,7 +65,7 @@ import java.util.Map;
  * @author Alex Rogachevsky
  */
 @SuppressWarnings("unused")
-public abstract class Entity extends StoredBean {
+public abstract class Entity extends StoredBean implements Externalizable {
 	public static final String TENANT_DELIMITER = "___";
 
 	private Integer tenantId = null; // whether used or not doesn't matter - needed for sharding/partition in the distributed storage (cluster)
@@ -67,6 +73,16 @@ public abstract class Entity extends StoredBean {
 	private Date modifiedAt; // automatically set by DataStorage - do not mess with it
 	
 	public Entity() {
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		SerializationDefinition.get(getClass()).write(out, this);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		SerializationDefinition.get(getClass()).read(in, this);
 	}
 
 	/**

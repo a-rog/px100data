@@ -8,7 +8,6 @@ import com.px100systems.data.core.Index;
 import com.px100systems.data.plugin.storage.hazelcast.PortableImpl;
 import com.px100systems.util.serialization.SerializationDefinition;
 import com.px100systems.util.serialization.SerializedCollection;
-import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -17,7 +16,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class TestPx100Entity extends Entity implements Portable, Externalizable {
+public class TestPx100Entity extends Entity implements Portable {
 	private static Random random = new Random();
 	private static final String[] firstNames = {
 		"Amy", "Amber", "Anna", "Abigail", "Alyssa", "Becky", "Bianca", "Clarissa", "Cathy", "Charlotte", "Camilla", "Cora", "Cloe", "Cayla", "Diane",
@@ -60,16 +59,6 @@ public class TestPx100Entity extends Entity implements Portable, Externalizable 
 	@Override
 	public void readPortable(PortableReader reader) throws IOException {
 		PortableImpl.readPortable(this, reader);
-	}
-
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		SerializationDefinition.get(getClass()).write(out, this);
-	}
-
-	@Override
-	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		SerializationDefinition.get(getClass()).read(in, this);
 	}
 
 	public TestPx100Entity() {
