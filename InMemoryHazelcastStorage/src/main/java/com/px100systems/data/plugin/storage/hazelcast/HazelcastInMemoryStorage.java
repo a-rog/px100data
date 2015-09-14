@@ -383,16 +383,17 @@ public class HazelcastInMemoryStorage implements InMemoryStorageProvider {
 			map.delete(key);
 	}
 
-	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static class SearchComparator implements Comparator<Map.Entry>, Serializable {
+		@Override
+		public int compare(Map.Entry o1, Map.Entry o2) {
+			return ((Map.Entry<Key, StoredBean>)o1).getKey().compareTo(((Map.Entry<Key, StoredBean>)o2).getKey());
+		}
+	}
+
+	@Override
 	public <T> List<T> search(String unitName, Class<T> cls, Criteria criteria, List<String> orderBy, Integer limit) {
-		Comparator<Map.Entry> orderByComparator = orderBy == null || orderBy.isEmpty() ?
-			new Comparator<Map.Entry>() {
-				@Override
-				public int compare(Map.Entry o1, Map.Entry o2) {
-					return ((Map.Entry<Key, StoredBean>)o1).getKey().compareTo(((Map.Entry<Key, StoredBean>)o2).getKey());
-				}
-			} : new OrderByComparator(ob(cls, orderBy));
+		Comparator<Map.Entry> orderByComparator = orderBy == null || orderBy.isEmpty() ? new SearchComparator() : new OrderByComparator(ob(cls, orderBy));
 		Predicate<Key, StoredBean> filter = criteria == null ? null : criteria.convert(new PredicateQueryBuilder(cls));
 
 		IMap<Key, T> map = hz.getMap(unitName);
@@ -404,13 +405,7 @@ public class HazelcastInMemoryStorage implements InMemoryStorageProvider {
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <T> EntityCursor<T> search(String unitName, Class<T> cls, Criteria criteria, List<String> orderBy) {
-		Comparator<Map.Entry> orderByComparator = orderBy == null || orderBy.isEmpty() ?
-			new Comparator<Map.Entry>() {
-				@Override
-				public int compare(Map.Entry o1, Map.Entry o2) {
-					return ((Map.Entry<Key, StoredBean>)o1).getKey().compareTo(((Map.Entry<Key, StoredBean>)o2).getKey());
-				}
-			} : new OrderByComparator(ob(cls, orderBy));
+		Comparator<Map.Entry> orderByComparator = orderBy == null || orderBy.isEmpty() ? new SearchComparator() : new OrderByComparator(ob(cls, orderBy));
 		Predicate<Key, StoredBean> filter = criteria == null ? null : criteria.convert(new PredicateQueryBuilder(cls));
 
 		IMap<Key, T> map = hz.getMap(unitName);
@@ -515,6 +510,26 @@ public class HazelcastInMemoryStorage implements InMemoryStorageProvider {
 		return new ArrayList<T>(criteria == null ? map.values() : map.values(criteria.convert(new PredicateQueryBuilder(cls))));
 	}
 
+	public static class HzEntryProcessor extends AbstractEntryProcessor<Key, Object> {
+		private InPlaceUpdate<?> u;
+
+		@SuppressWarnings("unused")
+		public HzEntryProcessor() {
+		}
+
+		public HzEntryProcessor(InPlaceUpdate<?> u) {
+			this.u = u;
+		}
+
+		@Override
+		public Object process(Map.Entry<Key, Object> entry) {
+			Object value = entry.getValue();
+			u.eval(value);
+			entry.setValue(value);
+			return value;
+		}
+	}
+
 	@Override
 	public List<EntityDescriptor> save(List<StoredBean> inserts, List<StoredBean> updates, List<Delete> deletes, List<InPlaceUpdate<?>> inPlaceUpdates,
 									   boolean serviceData) throws DataStorageException {
@@ -531,16 +546,7 @@ public class HazelcastInMemoryStorage implements InMemoryStorageProvider {
 					IMap<Key, Object> map = hz.getMap(u.getUnitName());
 					Key key = new Key(u.getId(), u.getUnitName(), maxPartitionSize);
 					inPlaceEntities.add((StoredBean)map.get(key));
-
-					map.executeOnKey(key, new AbstractEntryProcessor<Key, Object>() {
-						@Override
-						public Object process(Map.Entry<Key, Object> entry) {
-							Object value = entry.getValue();
-							u.eval(value);
-							entry.setValue(value);
-							return value;
-						}
-					});
+					map.executeOnKey(key, new HzEntryProcessor(u));
 				}
 			} catch (Throwable e) {
 				for (int i = 0, n = inPlaceEntities.size(); i < n; i++) {
