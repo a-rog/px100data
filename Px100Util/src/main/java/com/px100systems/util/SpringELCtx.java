@@ -17,6 +17,7 @@
 package com.px100systems.util;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +59,9 @@ public class SpringELCtx extends StandardEvaluationContext {
 			registerFunction("sum", SpringELCtx.class.getDeclaredMethod("sum", Object.class));
 			registerFunction("formatTime", SpringELCtx.class.getDeclaredMethod("formatTime", Date.class));
 			registerFunction("formatDateTime", SpringELCtx.class.getDeclaredMethod("formatDateTime", Date.class));
+			registerFunction("parseDateTime", SpringELCtx.class.getDeclaredMethod("parseDateTime", String.class));
 			registerFunction("formatDate", SpringELCtx.class.getDeclaredMethod("formatDate", Date.class));
+			registerFunction("parseDate", SpringELCtx.class.getDeclaredMethod("parseDate", String.class));
 			registerFunction("formatNumber", SpringELCtx.class.getDeclaredMethod("formatNumber", Double.class, String.class));
 			registerFunction("address", SpringELCtx.class.getDeclaredMethod("address", String.class, String.class, String.class, String.class));
 			registerFunction("formatPhone", SpringELCtx.class.getDeclaredMethod("formatPhone", String.class));
@@ -267,6 +270,13 @@ public class SpringELCtx extends StandardEvaluationContext {
 	public static String formatDate(Date date) {
 		return date != null ? new SimpleDateFormat(DATE_FORMAT).format(date) : "";	
 	}
+	public static Date parseDate(String date) {
+		try {
+			return date != null ? new SimpleDateFormat(DATE_FORMAT).parse(date) : null;
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	/**
 	 * Format number
@@ -285,6 +295,13 @@ public class SpringELCtx extends StandardEvaluationContext {
 	
 	public static String formatDateTime(Date date) {
 		return formatDate(date) + " " + formatTime(date);  	
+	}
+	public static Date parseDateTime(String date) {
+		try {
+			return date != null ? new SimpleDateFormat(DATE_FORMAT + " " + TIME_FORMAT).parse(date) : null;
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
