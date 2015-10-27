@@ -34,7 +34,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <org.springframework.version>4.1.3.RELEASE</org.springframework.version>
+        <org.springframework.version>4.2.2.RELEASE</org.springframework.version>
         <org.springsecurity.version>3.2.3.RELEASE</org.springsecurity.version>
         <java.target.version>1.8</java.target.version>
     </properties>
@@ -120,7 +120,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -137,43 +137,43 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.1.3</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.2.4</version>
+            <version>2.4</version>
         </dependency>
 
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>px100-utils</artifactId>
-            <version>0.3.2</version>
+            <artifactId>Px100Util</artifactId>
+            <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>px100-persistence</artifactId>
-            <version>0.3.2</version>
+            <artifactId>Px100Persistence</artifactId>
+            <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>px100-persistence-api</artifactId>
-            <version>0.3.2</version>
+            <artifactId>Px100PersistenceAPI</artifactId>
+            <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>in-memory-jdbc-persistence</artifactId>
-            <version>0.3.2</version>
+            <artifactId>InMemoryJdbcPersistence</artifactId>
+            <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>hazelcast-storage</artifactId>
-            <version>0.3.2</version>
+            <artifactId>InMemoryHazelcastStorage</artifactId>
+            <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>ignite-storage</artifactId>
-            <version>0.3.2</version>
+            <artifactId>InMemoryIgniteStorage</artifactId>
+            <version>0.3.0</version>
         </dependency>
     </dependencies>
 </project>

@@ -56,20 +56,20 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ignite.version>1.3.3</ignite.version>
+        <ignite.version>1.4.0</ignite.version>
         <java.target.version>1.8</java.target.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>px100-utils</artifactId>
-            <version>0.3.2</version>
+            <artifactId>Px100Util</artifactId>
+            <version>0.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.px100systems</groupId>
-            <artifactId>px100-persistence-api</artifactId>
-            <version>0.3.2</version>
+            <artifactId>Px100PersistenceAPI</artifactId>
+            <version>0.3.0</version>
         </dependency>
 
         <dependency>
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.1.3</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 </project>
